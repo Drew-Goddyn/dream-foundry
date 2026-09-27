@@ -36,7 +36,8 @@ No local model weights, GPU jobs, image generation, video rendering, large datas
 - [Research report template](docs/templates/research-report.md)
 - [Assessment template](docs/templates/assessment.md)
 - [Proposed authority decision](docs/adr/0001-separate-intent-from-execution.md)
+- [Foundation self-check and historical CI evidence](docs/reviews/foundation-self-check.md)
 
-Run `python3 tools/check_docs.py` and `python3 -m unittest discover -s tests` for the repository's mechanical documentation checks. They require only Python's standard library. They do not validate agent behavior, external links, source truth, or independent review.
+Run `python3 tools/check_docs.py` and `python3 -m unittest discover -s tests` with **Python 3.10 or later** for the repository's mechanical documentation checks. They require only Python's standard library. They do not validate agent behavior, external links, source truth, or independent review. If Python is unavailable locally, report that limitation rather than installing it during preflight.
 
 The repository is public. Publish sanitized summaries, not raw agent transcripts, credentials, or machine-specific environment reports. No project license has been selected yet; importing third-party code requires a separate provenance and license decision.
