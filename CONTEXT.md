@@ -28,6 +28,10 @@ _Avoid_: Latest files, finished work
 Recorded observations and measurements associated with a specified Submission or Trial.
 _Avoid_: Progress claim, confidence
 
+**Inspection Receipt**:
+A fixed account of which source was inspected under which rules and what was observed. It is a form of Evidence, not an Assessment or Acceptance.
+_Avoid_: Gate verdict, certification
+
 **Assessment**:
 A judgment of specified Evidence against a particular Work Order and its criteria.
 _Avoid_: Score, approval

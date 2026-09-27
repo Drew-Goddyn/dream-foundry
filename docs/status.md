@@ -1,55 +1,56 @@
 # Current status
 
-Snapshot: 2026-09-27. This is a durable handoff, not a live scheduler. The human wants rapid, low-resource build/use/review cycles.
+Snapshot: 2026-09-27. A handoff, not a live scheduler. Keep work local, CPU-only, and useful; no long survey or simulator prerequisite.
 
-## Decision and next action
+## Next action
 
-The human relayed the original **DF-VERIFY-01 PASS** for the first supervised workboard. No repair is requested. [Review assignment #5](https://github.com/Drew-Goddyn/dream-foundry/issues/5) is closed as completed. [Implementation/delivery #6](https://github.com/Drew-Goddyn/dream-foundry/issues/6) stays open for publication and human acceptance.
+Both wave-one workers have returned sealed reports through the shared workboard, according to the original reports relayed by the human. Prepare [wave two](agents/wave-02.md): **DF-VERIFY-02** assesses those two reports separately; **DF-BUILD-02** builds the smallest no-render inspector and two observed UX fixes in an isolated workspace. These two sessions may run in parallel. Neither has been reported launched yet.
 
-Use the same candidate for [wave one](agents/wave-01.md): **DF-OPS-01** prepares one durable board and produces a practical handoff runbook; **DF-RESEARCH-01** uses that board for one implementation-ready CPU-only anidoodle brief. The human starts the second session after the first reports BOARD_READY, while the first may continue its own work. Neither session has been launched by this planning update.
+Issues [#7](https://github.com/Drew-Goddyn/dream-foundry/issues/7) and [#8](https://github.com/Drew-Goddyn/dream-foundry/issues/8) are submitted, not accepted. The next assignments are [report review #9](https://github.com/Drew-Goddyn/dream-foundry/issues/9) and [implementation #10](https://github.com/Drew-Goddyn/dream-foundry/issues/10). Preserve the frozen W1 criteria. No duplicate first-workboard review or operations launch is needed.
 
-## Reviewed baseline
+## Evidence ledger
 
-| Item | Exact identity or attributed result |
-| --- | --- |
-| Implementation commit | `02675002f640dc484ec6f37a251aff2a5c21cc10` |
-| Implementation tree | `176e34317128c05c87e119c4447205adb0432a94` |
-| Foundation ancestor | `e37d64087d556f2488a8e214fd9d98fb42bf9b12` |
-| Local builder branch | `build/local-workboard-2rllM6` |
-| Reviewer session reported | `01a0e1ba-e70e-7f70-8cef-be38234c6155` |
-| Review result | PASS for supervised local behavior; no necessary repair |
-| Checks reported by reviewer | Six targeted tests, fourteen total tests, documentation checker, and independent CLI probes |
-| Evidence retention reported | Durable local bundle, clean detached checkout, initial observations, CLI logs, consistent before/after board snapshots |
-| Human acceptance | Not recorded |
-| Implementation publication | Still absent in latest remote branch inspection; earlier local connectivity failure and connector 403 reported |
+Reviewed Foundry baseline: commit `02675002f640dc484ec6f37a251aff2a5c21cc10`, tree `176e34317128c05c87e119c4447205adb0432a94`, foundation ancestor `e37d64087d556f2488a8e214fd9d98fb42bf9b12`. The human-relayed DF-VERIFY-01 report passed all critical supervised requirements, six targeted tests, fourteen total tests, and independent CLI probes. [Review #5](https://github.com/Drew-Goddyn/dream-foundry/issues/5) is complete. [Delivery #6](https://github.com/Drew-Goddyn/dream-foundry/issues/6) remains open for publication and human acceptance.
 
-This is attributed independent-review evidence received by human relay, not a second check by the planning conversation. ChatGPT has not opened the local source bundle or original logs. Private paths are retained in the human's handoff, not this public file.
+| Item | Operations handoff | Research handoff |
+| --- | --- | --- |
+| Work Order | W1-A, revision 1 | W1-B, revision 1 |
+| Trial / Assignment | W1-A-T1 / W1-A-A1 | W1-B-T1 / W1-B-A1 |
+| Submission | W1-A-S1 | W1-B-S1 |
+| Criteria revision | 1 | 1 |
+| Reported sealed files | 13, no errors | 28, no errors |
+| Result | Executable runbook and two observed UX proposals | 826-word source-contract inspection brief |
+| Assessment | Pending | Pending |
+| Human acceptance | Not recorded | Not recorded |
 
-## Two distinct assessments
+W1-A package digest: `94a88d07a4750c971891f3d819f810a4e030bd2526f974c82a071a89644e92f5`.
 
-The implementation PASS is for the source commit above against Work Order #6. Separately, real report Assessment `DF-VERIFY-01-DOC-CHECKS-S2-01a0e1ba` reportedly passed builder Submission `DOC-CHECKS-S2`, Trial `DOC-CHECKS-T2`, original foundation source above, criteria revision `1`, package digest `969b733cb2476bd4c0fe9be0c79ac87f974544b28032f771a153399cb96c18c2`.
+W1-B package digest: `c73f713de4b0b8d6cbea72703386feef3cd8975a62d3510cfc0ee7e033ea91b2`.
 
-The reviewer reports unchanged handoff/source and all six sealed files, with exactly one real Assessment and its event added to the board. The resulting report status is `review-pass-awaiting-human-acceptance`; acceptance is `not-recorded`. The CLI's `independence_verified: false` is intentional: arbitrary session strings cannot authenticate independence. The separate session and original review observations supply the evidence.
+Distinct actual session IDs were reported by both workers and recorded in their Work Orders. DF-OPS-01 observed W1-B active before the later W1-B Submission. These are sequential observations; they do not establish exact execution overlap or autonomous dispatch. Manifest metadata additions reportedly preserved the source, board, and frozen criteria bindings.
 
-## Roster
+The reports support a first useful two-session supervised workflow by attribution. The planning conversation has not opened the local wave manifest, source bundle, board, sealed reports, or raw logs. Repository records must not be described as an independent rerun of local work.
 
-| Label | Work Order | State | Scope |
-| --- | --- | --- | --- |
-| DF-BUILD-01 | [#6](https://github.com/Drew-Goddyn/dream-foundry/issues/6) | Build handed off; no repair queued | Preserve candidate; publication separate |
-| DF-VERIFY-01 | [#5](https://github.com/Drew-Goddyn/dream-foundry/issues/5) | Completed by relayed report | Do not relaunch unchanged review |
-| DF-OPS-01 | [#7](https://github.com/Drew-Goddyn/dream-foundry/issues/7) | Prepared for human launch | Shared board, task seeding, practical runbook, source-only handoff |
-| DF-RESEARCH-01 | [#8](https://github.com/Drew-Goddyn/dream-foundry/issues/8) | Prepared; starts after BOARD_READY | Smallest CPU-only anidoodle integration brief |
+## Source finding and decision
 
-Old standalone preflight and protocol tasks #1/#4 remain retired. The transport survey #3 is parked and is not this wave's research assignment. There is no automatic dispatcher or background worker implied by this roster.
+Research inspected anidoodle `03ddf534328962f8a91eb115e3ae67e03da4de5a` and Dream Loop `9bddb901f7d071cfefdd21e264267c757177a9df`. The proposed integration/tests were not run.
 
-## Remote repository and CI
+The planning orchestrator separately inspected [anidoodle's pinned gate](https://github.com/alexgreensh/anidoodle/blob/03ddf534328962f8a91eb115e3ae67e03da4de5a/skills/anidoodle/engine/tools/gate.mjs): its normal run opens adapters and compares frames before `contractScan()`. The file also creates a temporary directory at module load. This corroborates the narrow call-order finding, not the complete research report. The scanner uses text patterns rather than proving determinism or full transitive compliance.
 
-The latest inspected main is landing commit `62261db81ae9c02ee2d047a607ddbac41a11cc6f`. [Draft PR #2](https://github.com/Drew-Goddyn/dream-foundry/pull/2) remains a documentation proposal. Its previous head was `009aedbf6cc990cc09e7fc354cd681ed337f4a45`; [run 36302299433](https://github.com/Drew-Goddyn/dream-foundry/actions/runs/36302299433) passed for that head. This current documentation revision needs its own run; no local workboard CI is certified.
+Next implementation: a small explicit source-rule profile with a fixed Inspection Receipt. Keep source coverage and provenance separate from findings; partial snapshots never imply whole-repository PASS. Also add a usable Work Order example and opt-in compact status without changing existing default behavior. This is a reversible implementation experiment while report review proceeds, not an assertion that unassessed reports are accepted.
 
-Foundation-only CI correction `5e7b335dc250e93fd4254ad26b5af525af0fd144` adds the unmerged foundation to the pull-request target filter. It was not incorporated into the frozen implementation. The historical sealed report remains valid against its original source.
+## Source transport and publication
 
-## Limits and delivery
+DF-OPS-01 reports a source-only bundle restored to the exact reviewed commit/tree. Bundle SHA-256: `5c70ce006c51a557862f6eaf3f2fadbc9406ee3ac413661751a7a1644cc24780`. It reports examining six commits and 54 distinct historical file contents for obvious secrets, with original Git metadata retained. That is not a guarantee of secret absence.
 
-No GPU, generated media, model-weight downloads, extra agents, unattended provider execution, lease reassignment, authenticated roles, production recovery, or remote synchronization is being certified. No merge, deployment, visibility change, paid provisioning, or permission expansion is implied.
+The bundle is reportedly in the local wave's `exports/candidate.bundle`; it has not been uploaded to this conversation. Exact private paths remain in the human's handoff. Do not upload raw boards, transcripts, credentials, or machine settings. A reported filesystem path does not transfer bytes or make the implementation remotely accessible.
 
-A source-only candidate bundle is still needed in this conversation for actual implementation inspection and publication help. Do not upload raw boards, credential files, machine settings, or private transcripts. Do not reconstruct a commit from a claimed SHA. Wave-one outputs remain proposals until separately assessed; their use of the unchanged baseline is a supervised experiment, not acceptance or release.
+Most recent inspected remote branches: main `62261db81ae9c02ee2d047a607ddbac41a11cc6f`, documentation `446fb03f22b43ef2b387a3e509585c1bde6d2b09` before this documentation update. No implementation branch was visible. [Draft PR #2](https://github.com/Drew-Goddyn/dream-foundry/pull/2) remains documentation only and unmerged. Historical [CI run 36328116228](https://github.com/Drew-Goddyn/dream-foundry/actions/runs/36328116228) passed for 446fb03; this revision needs its own result. No implementation CI is claimed.
+
+## Working arrangement
+
+Both new sessions use the existing baseline CLI for shared-board writes. The reviewer adds only W1 Assessments; the builder adds only its distinct W2 assignment/result. Changed code is tested on disposable scratch boards, never the live wave database. Both preserve the shared source, manifest bindings, original evidence, and frozen criteria.
+
+The original workboard and historical DOC-CHECKS-S2 report retain their earlier review results. W1 report review cannot certify new implementation. When DF-BUILD-02 returns fixed code, a fresh implementation review is required for that changed scope.
+
+No merge, acceptance, deployment, new workers, GPU/rendering, model downloads, paid infrastructure, credential/permission changes, or unattended campaign has been executed by preparing these documents. High-reasoning preference is not an unlimited model-usage grant.
