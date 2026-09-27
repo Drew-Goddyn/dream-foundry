@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "proposal-only",
+  "enabled": false,
+  "campaign_id": "precursor-001",
+  "purpose": "Research and CPU-only protocol experiments before creative rendering",
+  "launch_mode": "human-only",
+  "model": "human-selected",
+  "reasoning_preference": "highest-supported",
+  "proposed_limits": {
+    "concurrent_producers": 2,
+    "concurrent_reviewers": 1,
+    "assignments_per_launch": 1,
+    "nested_agent_launches": 0,
+    "local_gpu_jobs": 0,
+    "model_downloads": 0,
+    "cloud_provisioning": false,
+    "automatic_merges": false
+  },
+  "unattended_allowance": null,
+  "enforcement": "not-implemented",
+  "activation_requires": [
+    "observed local preflight",
+    "explicit human operating allowance",
+    "independently checked prototype",
+    "tested stop and recovery behavior"
+  ]
+}

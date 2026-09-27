@@ -1,0 +1,19 @@
+# Local runtime and unsanitized evidence
+.foundry/
+.dream-loop/
+.local/
+.tmp/
+out/
+logs/
+*.log
+*.sqlite
+*.sqlite-*
+*.db
+*.db-*
+.env
+.env.*
+!.env.example
+node_modules/
+__pycache__/
+*.pyc
+.DS_Store
