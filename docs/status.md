@@ -1,31 +1,55 @@
 # Current status
 
-Snapshot: 2026-09-26, America/Vancouver. This is a handoff, not a live scheduler.
+Snapshot: 2026-09-27. This is a handoff, not a live scheduler. The human wants short build/use/review cycles, not a research program before useful work.
 
-## Latest direction
+## Next action
 
-The human asked to move quickly and avoid long experiments. The earlier separate preflight, transport study, protocol study, and full offline simulator are no longer prerequisites. Build a useful local workboard now, using reversible defaults and short checks. This changes pacing and scope staging, not merge, spend, or agent-launch permissions.
+Launch a fresh **DF-VERIFY-01** on the builder's existing local candidate using [Work Order #5](https://github.com/Drew-Goddyn/dream-foundry/issues/5) and the private, filled launch file supplied in the human's handoff. Preserve the temporary handoff in permitted durable local storage, then review offline. Do not launch another first-build session or wait for GitHub publication.
 
-Repository: `Drew-Goddyn/dream-foundry`, public at inspection. Main remains the initial README commit `62261db81ae9c02ee2d047a607ddbac41a11cc6f`. [Draft PR #2](https://github.com/Drew-Goddyn/dream-foundry/pull/2) contains the foundation and this fast-path revision. Use its exact current head, not main, to start a builder branch.
+## Candidate ledger
 
-## What exists
+The human relayed DF-BUILD-01's report. These entries are builder-reported until independently checked:
 
-Documentation, role briefs, templates, a disabled policy example, and small documentation checks exist. Historical CI run 36299928678 passed eight checker fixtures for foundation head d945c201; [the record](reviews/foundation-self-check.md) identifies the exact historical merge snapshot. New revisions need their own checks. No controller, workboard, local worker, or fresh independent reviewer has run from this chat.
+| Item | Identity or report |
+| --- | --- |
+| Starting foundation | `e37d64087d556f2488a8e214fd9d98fb42bf9b12` |
+| Local candidate commit | `02675002f640dc484ec6f37a251aff2a5c21cc10` |
+| Local candidate tree | `176e34317128c05c87e119c4447205adb0432a94` |
+| Builder branch | `build/local-workboard-2rllM6` |
+| Packaging | Clean tree, self-contained Git bundle, patch, handoff manifest |
+| Self-tests | Six workboard smoke tests and fourteen total tests reported passing |
+| Environment | Python 3.14.2 and SQLite 3.53.2 reported; older Python support not exercised |
+| Real report | Submission `DOC-CHECKS-S2`, Trial `DOC-CHECKS-T2` |
+| Report source / criteria | Starting foundation above / revision `1` |
+| Report package digest | `969b733cb2476bd4c0fe9be0c79ac87f974544b28032f771a153399cb96c18c2` |
+| Independent assessment | Pending; builder's simulated Assessment does not count |
+| Human acceptance | Not recorded |
+| Publication | Builder reported local connectivity failure and connector 403; no implementation PR |
 
-## Dispatch
+The planning conversation has not received the bundle or inspected the implementation. Local paths, raw logs, and private machine details are omitted from this public document. Real session handles have not been supplied in the relayed report; role labels are not authentication.
 
-| Label | Work Order | State | Result |
+## Independently inspectable repository facts
+
+Repository: `Drew-Goddyn/dream-foundry`. The remote branch inspection at handoff showed `main` at landing commit `62261db81ae9c02ee2d047a607ddbac41a11cc6f` and the documentation branch, not the reported implementation branch. [Draft PR #2](https://github.com/Drew-Goddyn/dream-foundry/pull/2) remains the planning foundation, not the local workboard candidate.
+
+The builder's CI-filter finding was confirmed in the foundation: pull-request checks targeted only `main`. Commit `5e7b335dc250e93fd4254ad26b5af525af0fd144` adds `docs/phase-0-foundation` to that target filter, without changing permissions, runner, or jobs. [Documentation CI run 36302209587](https://github.com/Drew-Goddyn/dream-foundry/actions/runs/36302209587) completed successfully for that documentation head. This is not workboard CI, independent semantic review, or a tested pull request targeting the foundation. Later documentation revisions need their own checks.
+
+Keep this CI correction separate from the frozen local candidate during review. The sealed report's claims are historical to its source revision, not false merely because a later foundation fixes the issue.
+
+## Roster
+
+| Label | Work Order | State | Next result |
 | --- | --- | --- | --- |
-| DF-BUILD-01 | [#6](https://github.com/Drew-Goddyn/dream-foundry/issues/6) | Ready for human launch | First usable local research workboard |
-| DF-VERIFY-01 | [#5](https://github.com/Drew-Goddyn/dream-foundry/issues/5) | Launch after fixed candidate | Fresh review of actual entry point and short checks |
-| DF-RESEARCH-01 | [#3](https://github.com/Drew-Goddyn/dream-foundry/issues/3) | Optional; only for a concrete blocker | Answer a decision the running slice needs |
-| DF-PREFLIGHT-01 | [#1](https://github.com/Drew-Goddyn/dream-foundry/issues/1) | Retired as a separate launch | Checks folded into DF-BUILD-01 startup |
-| DF-PROTOCOL-01 | [#4](https://github.com/Drew-Goddyn/dream-foundry/issues/4) | Retired as a separate launch | Short protocol tests folded into #6 |
+| DF-BUILD-01 | [#6](https://github.com/Drew-Goddyn/dream-foundry/issues/6) | Candidate reported; awaiting review | Repair only after concrete findings |
+| DF-VERIFY-01 | [#5](https://github.com/Drew-Goddyn/dream-foundry/issues/5) | Ready for human launch; not reported running | Original Assessment of fixed candidate and actual report |
+| DF-RESEARCH-01 | [#3](https://github.com/Drew-Goddyn/dream-foundry/issues/3) | Parked | Answer only a concrete next blocker |
 
-Real session handles: none reported. Repository access is established; local Codex, Python, filesystem permissions, authentication, and the owner's remaining model/GitHub allowances are uninspected.
+The standalone scout and protocol assignments (#1 and #4) remain retired. Existing [builder instructions](agents/launch.md) are the original first-build brief, not a request for a duplicate launch.
 
-## Still deliberately absent
+## Review scope and next increment
 
-No automatic merges, branch-rule changes, public listener, paid infrastructure, Project board, Codespace, GPU workload, or recursive worker spawning. The builder can proceed from the unmerged foundation; waiting for a documentation-only approval is not a separate gate. Human acceptance and fresh review apply to the implemented candidate.
+Exercise the real CLI and six short cases in [the precursor suite](experiments/precursor-suite.md). Use fresh scratch state for destructive checks, preserve sealed source/evidence, and distinguish the report Assessment from the implementation Assessment. A known defect returns to the builder; no extra architecture gate is required.
 
-Next action: launch DF-BUILD-01 with [the complete brief](agents/launch.md). Do not launch the retired scout/protocol roles.
+After a satisfactory review, the proposed next increment is two human-launched research/documentation sessions using the same explicit board root on disjoint tasks. That is not yet an authorized unattended campaign or a claimed working swarm.
+
+Publication remains a separate delivery issue. No merge, deployment, billing change, permission expansion, new worker launch, GPU job, model download, or cloud provisioning was performed by recording this handoff.
