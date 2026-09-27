@@ -2,7 +2,7 @@ name: Documentation checks
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, docs/phase-0-foundation]
   push:
     branches: [main]
   workflow_dispatch:
