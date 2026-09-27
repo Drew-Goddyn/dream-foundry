@@ -2,32 +2,30 @@
 
 A human-directed Codex swarm for research, experimentation, and eventually executable art.
 
-**Now: build a useful local workboard, then improve it while using it.** The human requested fast, low-resource iteration rather than a long experiment or planning program. One builder makes the first working slice; one fresh reviewer checks it. Research happens only where it unblocks that slice.
+**Now: use the reviewed local workboard for two useful precursor tasks.** The human relayed a fresh review reporting PASS for candidate `02675002`. No repair was requested. The implementation still exists in a local bundle, not on this documentation branch; see [status](docs/status.md) for exact identities, attribution, and publication state.
 
-The repository currently contains instructions, planning, and passing historical documentation checks, not an implemented workboard or running swarm. See [status](docs/status.md) for exact evidence and [the build brief](docs/agents/launch.md) for the next action.
+## Start here
 
-## Start
+Read [current status](docs/status.md), then [wave-one launch instructions](docs/agents/wave-01.md). Launch **DF-OPS-01** first. After it reports **BOARD_READY**, launch **DF-RESEARCH-01** on the same machine. They use one explicit durable state root and disjoint workspaces; they do not launch further agents.
 
-Launch one local Codex session named **DF-BUILD-01** with the complete message in [docs/agents/launch.md](docs/agents/launch.md). Work from `docs/phase-0-foundation` while the foundation PR is unmerged, in a separate builder branch/worktree. There is no prerequisite scout session, framework survey, or full simulator.
+The operational task makes shared-board startup and handoff repeatable. The research task identifies the smallest CPU-only anidoodle integration. Both use the actual workboard to claim and seal their output. No framework survey, simulator program, or repeated review of unchanged implementation is a prerequisite.
 
-The first slice is a local CLI that lets human-launched agents take a research Work Order, claim it without a collision, submit a fixed report, record a separate review, and inspect durable status. Use it on one real precursor task. This is a supervised prototype, not unattended execution or automatic agent spawning.
+The [first-build brief](docs/agents/launch.md) and [first-review brief](docs/agents/reviewer.md) remain historical instructions for those completed assignments, not requests to launch duplicates. Human acceptance, publication, merge, and unattended automation remain separate from the received reviewer PASS.
 
-After a fixed candidate exists, launch **DF-VERIFY-01** using [the reviewer brief](docs/agents/reviewer.md). Review the working result, not another speculative architecture proposal.
+## Working loop
 
-## Fast loop
+Make a useful change, exercise its real entry point, obtain fresh review for changed implementation, and use the result. Treat research reports as proposals until assessed. Increase workers and autonomy separately; a report or issue does not start a process.
 
-Build one usable slice. Run short checks for the failure modes it actually exposes. Review independently. Repair or keep the result. Use the workboard to drive the next small research/documentation task.
+Agents read [AGENTS.md](AGENTS.md). Terms live in [CONTEXT.md](CONTEXT.md); authority in [operating policy](docs/operating-policy.md); assignment and evidence behavior in [coordination](docs/coordination.md). The [precursor suite](docs/experiments/precursor-suite.md) separates short current checks from deferred resilience work.
 
-Keep the [glossary](CONTEXT.md), [operating policy](docs/operating-policy.md), [coordination contract](docs/coordination.md), and [bootstrap plan](docs/bootstrap-plan.md) current. The larger [experiment catalog](docs/experiments/precursor-suite.md) is a risk backlog, not a gate before useful work.
+## Resources and publication
 
-## Resources and GitHub
+Current work uses installed tools and lightweight source/documentation inspection. GPU work, local model weights, generated media, large datasets, paid provisioning, and recursive worker launching are outside these assignments. Human-launched Codex sessions still consume the owner's model allowance. Use the highest supported reasoning setting on the human-selected model; report unknown configuration honestly.
 
-No GPU, local model weights, image/video generation, large datasets, paid cloud provisioning, or recursive worker launching in this slice. Local agent sessions still use the owner's model allowance. Use the highest reasoning setting supported by the human-selected model without claiming a prompt changes the client's configuration.
+GitHub holds Work Orders, draft PRs, and hosted checks. [GitHub operations](docs/github.md) records plan guidance and unapplied settings. Main is not automatically merged. Keep raw boards, transcripts, credentials, and private machine details local; the repository is public.
 
-GitHub holds Work Orders, draft PRs, and lightweight hosted checks. [GitHub operations](docs/github.md) explains the Pro allowance and settings that remain unconfigured. Main is not automatically merged; raw logs and machine details stay local because this repository is public.
+## Verification
 
-## Checks and references
+The documentation branch supplies standard-library checks: `python3 tools/check_docs.py` and `python3 -m unittest discover -s tests` with Python 3.10+. Their success is not implementation CI. The local candidate's reviewer reported six workboard checks, fourteen total tests, independent CLI observations, and a real second-session report Assessment; source artifacts have not yet been inspected from the planning conversation.
 
-With Python 3.10 or later, run `python3 tools/check_docs.py` and `python3 -m unittest discover -s tests`. These existing standard-library checks cover documentation structure and their own fixtures, not agent behavior. The builder adds short prototype tests and a real walkthrough.
-
-Useful on demand: [architecture](docs/architecture.md), [transport research](docs/research/coordination-options.md), [research report](docs/templates/research-report.md), [assessment template](docs/templates/assessment.md), and [historical self-check evidence](docs/reviews/foundation-self-check.md). No project license has been selected; third-party code reuse needs a provenance/license decision.
+Useful on demand: [architecture](docs/architecture.md), [transport research](docs/research/coordination-options.md), [report template](docs/templates/research-report.md), [assessment template](docs/templates/assessment.md), and [historical self-checks](docs/reviews/foundation-self-check.md). No project license has been selected; third-party code reuse needs an explicit provenance/license decision.
