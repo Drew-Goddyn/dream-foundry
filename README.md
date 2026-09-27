@@ -2,42 +2,32 @@
 
 A human-directed Codex swarm for research, experimentation, and eventually executable art.
 
-**Current phase: CPU-only precursor work.** This repository contains a proposed operating model, research, launch briefs, and lightweight documentation checks. It does not yet contain a working controller, agent runner, or autonomous swarm. A document describing a feature is not evidence that the feature works.
+**Now: build a useful local workboard, then improve it while using it.** The human requested fast, low-resource iteration rather than a long experiment or planning program. One builder makes the first working slice; one fresh reviewer checks it. Research happens only where it unblocks that slice.
 
-## Start here
+The repository currently contains instructions, planning, and passing historical documentation checks, not an implemented workboard or running swarm. See [status](docs/status.md) for exact evidence and [the build brief](docs/agents/launch.md) for the next action.
 
-Read the [current status](docs/status.md), then the [bootstrap plan](docs/bootstrap-plan.md). The first local assignment is **DF-PREFLIGHT-01**, described in [agent launch instructions](docs/agents/launch.md). Launch only that assignment initially. Research and protocol-design lanes follow after local capabilities are known.
+## Start
 
-Agents begin with [AGENTS.md](AGENTS.md). Project terminology lives in [CONTEXT.md](CONTEXT.md).
+Launch one local Codex session named **DF-BUILD-01** with the complete message in [docs/agents/launch.md](docs/agents/launch.md). Work from `docs/phase-0-foundation` while the foundation PR is unmerged, in a separate builder branch/worktree. There is no prerequisite scout session, framework survey, or full simulator.
 
-## What we are building
+The first slice is a local CLI that lets human-launched agents take a research Work Order, claim it without a collision, submit a fixed report, record a separate review, and inspect durable status. Use it on one real precursor task. This is a supervised prototype, not unattended execution or automatic agent spawning.
 
-The long-term studio explores creative directions, builds reproducible candidates, assesses actual outputs, and retains useful discoveries. The first workload is the factory itself: research, failure-case experiments, documentation, and planning that make that studio possible.
+After a fixed candidate exists, launch **DF-VERIFY-01** using [the reviewer brief](docs/agents/reviewer.md). Review the working result, not another speculative architecture proposal.
 
-The intended progression is:
+## Fast loop
 
-1. Human-launched, explicitly scoped Codex assignments with durable reports.
-2. A CPU-only simulation of assignment ownership, evidence, review, cancellation, and recovery.
-3. One live local build/review loop under an explicit allowance.
-4. A small supervised swarm, followed by measured increases in capacity and autonomy.
+Build one usable slice. Run short checks for the failure modes it actually exposes. Review independently. Repair or keep the result. Use the workboard to drive the next small research/documentation task.
 
-GitHub records intent and reviewed changes. A proposed local controller owns live assignment state. Agents produce submissions, not their own acceptance. See [architecture](docs/architecture.md), [coordination](docs/coordination.md), and [operating policy](docs/operating-policy.md).
+Keep the [glossary](CONTEXT.md), [operating policy](docs/operating-policy.md), [coordination contract](docs/coordination.md), and [bootstrap plan](docs/bootstrap-plan.md) current. The larger [experiment catalog](docs/experiments/precursor-suite.md) is a risk backlog, not a gate before useful work.
 
-## Low-resource means
+## Resources and GitHub
 
-No local model weights, GPU jobs, image generation, video rendering, large dataset downloads, or paid cloud provisioning in this phase. Human-launched Codex sessions can still consume the owner's model allowance; GitHub Pro does not pay for them. Highest supported reasoning on the human-selected model is a preference, not an unlimited spending grant.
+No GPU, local model weights, image/video generation, large datasets, paid cloud provisioning, or recursive worker launching in this slice. Local agent sessions still use the owner's model allowance. Use the highest reasoning setting supported by the human-selected model without claiming a prompt changes the client's configuration.
 
-## Repository map
+GitHub holds Work Orders, draft PRs, and lightweight hosted checks. [GitHub operations](docs/github.md) explains the Pro allowance and settings that remain unconfigured. Main is not automatically merged; raw logs and machine details stay local because this repository is public.
 
-- [Research and integration options](docs/research/coordination-options.md)
-- [GitHub Pro and repository operations](docs/github.md)
-- [CPU-only precursor experiment suite](docs/experiments/precursor-suite.md)
-- [Independent review instructions](docs/agents/reviewer.md)
-- [Research report template](docs/templates/research-report.md)
-- [Assessment template](docs/templates/assessment.md)
-- [Proposed authority decision](docs/adr/0001-separate-intent-from-execution.md)
-- [Foundation self-check and historical CI evidence](docs/reviews/foundation-self-check.md)
+## Checks and references
 
-Run `python3 tools/check_docs.py` and `python3 -m unittest discover -s tests` with **Python 3.10 or later** for the repository's mechanical documentation checks. They require only Python's standard library. They do not validate agent behavior, external links, source truth, or independent review. If Python is unavailable locally, report that limitation rather than installing it during preflight.
+With Python 3.10 or later, run `python3 tools/check_docs.py` and `python3 -m unittest discover -s tests`. These existing standard-library checks cover documentation structure and their own fixtures, not agent behavior. The builder adds short prototype tests and a real walkthrough.
 
-The repository is public. Publish sanitized summaries, not raw agent transcripts, credentials, or machine-specific environment reports. No project license has been selected yet; importing third-party code requires a separate provenance and license decision.
+Useful on demand: [architecture](docs/architecture.md), [transport research](docs/research/coordination-options.md), [research report](docs/templates/research-report.md), [assessment template](docs/templates/assessment.md), and [historical self-check evidence](docs/reviews/foundation-self-check.md). No project license has been selected; third-party code reuse needs a provenance/license decision.

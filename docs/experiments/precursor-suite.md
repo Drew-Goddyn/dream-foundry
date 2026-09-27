@@ -1,42 +1,39 @@
-# CPU-only precursor experiment suite
+# Short checks first; resilience backlog later
 
-Status: experiment design, not results. No model calls, GPU access, rendering, or external mutations are needed for the offline cases. A later builder implements the harness after independent review of the plan.
+The human asked to avoid long experiments. This replaces the requirement to complete an eighteen-case simulator before building. Implement the useful supervised CLI and test the small scope it actually exposes.
 
-## Reference workload
+## Six mandatory smoke checks for the first slice
 
-Use a tiny synthetic repository, a fixed corpus of source excerpts, and deterministic fake-worker messages. Ask workers to produce a source-backed research note, propose a glossary correction, and assess a deliberate documentation contradiction. A fake response is labeled simulated and never counted as live agent evidence.
+| Check | Direct observation |
+| --- | --- |
+| Happy path | Enqueue one real research/documentation Work Order, claim it, submit a small fixed report, attach a separate Assessment, and inspect status. A test reviewer is labeled simulated; fresh human-launched review is separately demonstrated. |
+| Claim collision | Two local CLI processes contend for one Trial; only one obtains its current Assignment. |
+| Submission integrity | Same-ID/same-digest resubmission is harmless; changed content under that ID conflicts; missing or modified sealed evidence cannot support PASS. |
+| Review bookkeeping | Known same-session review and mismatched source/criteria are rejected; required BLOCKED/FAIL criteria cannot be averaged into PASS; reviewer PASS is not human Acceptance. |
+| Persistence | Close every CLI process, reopen against the same temporary state root, and observe the same recorded state. This does not certify daemon recovery. |
+| Cancellation | Cancel an Assignment and attempt a late submission; it cannot advance the Work Order. The tool explicitly says the human-opened agent process is not terminated by ledger cancellation. |
 
-## Required protocol cases
+Use tiny fixtures and real temporary local storage. The suite should stay short enough to run during normal edits. A pair of local helper processes tests claim concurrency; it is not an agent swarm or another model invocation. Include negative/control fixtures so a green result can actually detect defects.
 
-| ID | Stimulus | Required observable outcome |
+No performance campaign, external provider call, GPU job, large dataset, or full simulator is required. If a prerequisite is missing, report the actual blocker; do not launch an installation/research project without need.
+
+## Future risk catalog, not first-slice gates
+
+The former P01-P18 cases remain below as a map of where tests belong when new features are introduced. First-slice equivalents are covered by the smoke checks, not a second suite.
+
+| IDs | Risk | Add the test when |
 | --- | --- | --- |
-| P01 | Two workers request the same ready Trial | One current Assignment; no duplicate reservation |
-| P02 | Identical Submission delivered twice | One recorded effect; second delivery returns the existing result |
-| P03 | Same submission ID with different content | Conflict, no replacement of prior Evidence |
-| P04 | Lease expires, then old worker submits | Stale result retained/quarantined; no acceptance or current-state advance |
-| P05 | Expired worker is still running | Replacement cannot share its writable workspace; termination or isolation is demonstrated |
-| P06 | Crash after reservation but before dispatch | Restart reconciles reservation without charging twice or forgetting possible work |
-| P07 | Crash after result is sealed but before issue update | Recover local state and reconcile publication; do not promise exactly-once GitHub writes |
-| P08 | Builder reports success without evidence | Awaiting evidence or BLOCKED, not accepted |
-| P09 | Reviewer is the builder's same session | Independence fails even if the role label changes |
-| P10 | Valid review refers to an old source/criteria revision | Review remains historical; new Submission requires assessment |
-| P11 | Digest mismatch or missing artifact | Evidence rejected or BLOCKED; no silent substitution |
-| P12 | Reviewer cannot run a critical check | Criterion stays BLOCKED; average score cannot cancel it |
-| P13 | Cancel while task and child process are active | Stop new dispatch; target owned process group; report actual survivors |
-| P14 | Allowance exhausted or usage missing | No new dispatch beyond grant; missing telemetry remains unknown |
-| P15 | Clock jumps or controller restarts | Reconcile ownership; do not blindly renew stale grants |
-| P16 | External text requests more privileges or another worker | Text remains untrusted data; no permission expansion |
-| P17 | GitHub timeout after a successful remote write | Marker/reconciliation detects prior effect or surfaces uncertainty |
-| P18 | Policy changes during an active assignment | Existing grant is reconciled explicitly; it is not silently widened |
+| P01 | Duplicate current claims | Now, claim collision |
+| P02-P03 | Duplicate/conflicting submissions | Now, integrity |
+| P04-P05 | Expired grants and old workers still alive | Automatic lease expiry/reassignment is introduced |
+| P06-P07 | Crash between reservation/dispatch or sealing/publication | Autonomous dispatcher or publication outbox is introduced |
+| P08-P12 | Missing evidence, false independence, stale criteria, digest mismatch, blocked review | Now, integrity and review bookkeeping |
+| P13 | Cancelling owned process groups without killing unrelated sessions | Programmatic process supervision is introduced; ledger cancellation is tested now |
+| P14-P15 | Missing usage, exhausted allowances, clock jumps | Unattended accounting and time-based scheduling are introduced |
+| P16 | Retrieved instructions attempt privilege expansion | Maintain the trust rule now; exercise its enforcement at any new tool/launch seam |
+| P17 | Remote write succeeds before timeout | Actual GitHub write synchronization is introduced |
+| P18 | Active grant silently widens after policy update | Policy hot reload or unattended grant renewal is introduced |
 
-Each case needs a positive/control trace and a deliberately failing implementation or fixture that demonstrates the test can detect the defect. Test outcomes through the module interface, not by reading private implementation state.
+## Tune by using it
 
-## Research-quality cases
-
-Create a small rubric covering factual support, source freshness, explicit uncertainty, decision usefulness, and instructions another agent can execute. Include one stale source, one source that contradicts the proposed recommendation, one missing capability, and one prompt-injection-like instruction in a quoted document. Reviewers must identify the concrete source and consequence, not merely give a numerical rating.
-
-Freeze the corpus and criteria before comparing serial, independent-parallel, and coordinated execution. Count useful accepted results, unsupported claims, human interventions, measured elapsed time, and model usage when available. Do not claim a speed or quality advantage from a simulation alone.
-
-## Smallest live probe, later
-
-After explicit authorization and observed local capabilities, use one disposable documentation task and one fresh reviewer. Capture actual session IDs, scoped permissions, source revision, result, error/stop behavior, and reported usage. Re-run the real entry point independently. Keep this finding separate from offline harness results.
+Pick one real precursor task, write down the problem, make one small change, and observe the result. Track useful output and human interventions without turning the project into a measurement framework. A keep/revert note is enough for reversible changes; consequential authority changes still need an explicit decision.

@@ -1,50 +1,33 @@
-# Architecture: a local evidence-driven work loop
+# Architecture: local workboard first
 
-Status: proposed, not implemented. Vocabulary: [CONTEXT.md](../CONTEXT.md). Runtime contracts: [coordination](coordination.md).
+Status: proposed implementation brief, not a running system. The human's latest direction replaces the earlier research-first sequence.
 
-## Preserve the destination
+## Choose the smallest useful seam
 
-Dream Foundry will eventually search over creative hypotheses and executable artwork. The immediate problem is smaller: several human-launched Codex sessions must produce research and experiments without losing ownership, provenance, review independence, or the user's control of resources.
+Build one Workboard module behind a CLI. It owns persisted Work Orders, exclusive Assignments, fixed Submissions, Assessments, and readable status. Callers should not coordinate by editing the database or negotiating issue comments.
 
-Keep two kinds of work distinct. Factory work improves Foundry and its methods. Studio work creates artwork using those methods. Changes to policy, evaluation, and the controller pass through independent review; an artwork Trial cannot change its own evaluator or Operating Allowance.
+Prefer an already installed Python 3.10+ runtime and standard-library SQLite/filesystem tools for the first slice. All clients invoke the same module through the CLI; separate CLI processes may open transactions, but no worker edits tables directly. The single-owner rule is logical ownership by the Workboard implementation, not a requirement for a daemon. Keep the database on one host, outside tracked files.
 
-## Three same-agent design alternatives
+A small CLI eliminates the need to choose between Codex SDK, app-server, MCP, and Symphony before the first useful result. Human-launched Codex sessions already supply the reasoning and can invoke local tools. Richer transport is a later adapter only when something must actually vary.
 
-These are planning alternatives, not independently reviewed designs.
+## Alternatives considered, same-agent design passes
 
-| Shape | Caller interface | Hidden complexity | Trade-off |
-| --- | --- | --- | --- |
-| GitHub-native manual workflow | Read a Work Order; post a Submission; request review | Existing issue/PR storage and access | Lowest setup; assignment comments do not provide atomic leases or restartable execution |
-| Thin local controller | Obtain an Assignment; renew it; submit or block | Ownership, allowance accounting, retries, evidence linkage, recovery | A small amount of new code must be tested; good locality for coordination defects |
-| Adopt a full orchestrator | Configure tracker/workflow; start runtime | Dispatch, workspace lifecycle, session management | Faster when its assumptions fit; larger dependency and permission surface, and manual-launch/review semantics still need verification |
+A GitHub-only work queue has almost no setup but lacks our atomic local claim semantics. A daemon with provider adapters offers automatic wake-ups but adds lifecycle, authentication, and recovery work before a useful result. A local CLI workboard gives the current caller a simple interface and keeps transactions, snapshots, and validation in one implementation. Choose the CLI now; keep the other options as a nonblocking research note.
 
-Recommendation: use the first shape during bootstrap and test the second with fake workers before selecting a live transport. Study Symphony as a reference and evaluate adoption against explicit requirements rather than assuming a custom controller is necessary. See [research](research/coordination-options.md).
+## Scope and authority
 
-## Information authority
+Repository documents hold intent/policy; GitHub issues hold scoped Work Orders; the local workboard holds current assignments and evidence references. Initially import or seed only explicit Work Orders. No GitHub polling, bidirectional synchronization, or public listener is needed.
 
-Repository documents hold versioned intent and operating policy. GitHub issues hold scoped Work Orders and discussion. Submitted artifact references identify exact source/output snapshots. A local controller, once implemented, owns only live Assignments, reservations, and execution state. GitHub updates are a projection of execution, not a second mutable lease database.
+The first slice is a trusted, same-user, single-host prototype. Role/session IDs record provenance and detect accidental same-session review; they are not authentication or proof against a malicious agent. Filesystem and client permissions still matter. Do not sell bookkeeping as a security boundary.
 
-The controller snapshots an eligible Work Order revision before dispatch. Editing an issue does not retroactively change an active Assignment's target. A changed target creates a new revision and triggers reconciliation.
+Assignment grants are bounded by the Work Order/session scope. Cancellation invalidates the current claim. Automatic lease expiry, replacement workers, process supervision, and unattended retry are not in the first slice; a stale assignment is explicitly cancelled before any replacement. No old process gets declared dead because a timer elapsed.
 
-## Deep modules
+## Module depth and tests
 
-| Module | Interface sketch | Implementation it hides |
-| --- | --- | --- |
-| Work Ledger | assign / renew / record | Atomic claims, fencing tokens, deadlines, idempotency, allowance reservations, persisted events |
-| Trial Executor | execute / cancel | Worker process lifecycle, isolated worktree, pinned brief, event capture, effective permissions, cleanup |
-| Assessment Lab | assess | Criteria binding, reproducible checks, fresh-context review dispatch, unresolved observations |
-| Evidence Catalog | seal / retrieve | Artifact digests, provenance, sanitization state, retention, immutable publication references |
+Keep claim transitions, submission sealing/digests, repeated-delivery handling, and assessment binding inside Workboard. The interface is the test surface. Use a temporary real database and real filesystem fixtures, with two CLI processes for a claim collision. Avoid exposing storage internals to make tests convenient.
 
-These are module seams, not a mandate for four deployed processes. Begin with one local program. Hide transport and filesystem operations behind internal seams where production and deterministic test adapters genuinely differ. No separate module per agent persona.
+Do not prebuild the previously proposed Trial Executor, Assessment Lab, and Evidence Catalog as separate packages. Extract a module when real variation or duplicated knowledge earns the seam. Report schemas can remain small validated data structures.
 
-SQLite is a provisional single-host ledger choice, owned by the controller. Keep its file on local storage; workers never edit it directly or share it across network filesystems. SQLite's own guidance distinguishes local/application storage from cases needing many networked clients or simultaneous writers: [SQLite usage guidance](https://www.sqlite.org/whentouse.html). A later multi-host requirement should prompt a new decision, not a network-mounted database file.
+## Later, when earned
 
-## Dependency and test strategy
-
-Pure policy and transition logic is in-process and tested directly through the Work Ledger interface. Use temporary local workspaces and real Git in integration tests when available. Inject a deterministic fake clock for time-driven behavior. Third-party Codex and GitHub adapters get recorded-response/failure fixtures; live smoke tests remain separate because mocks cannot establish real authentication or process control.
-
-Evaluate CLI execution first because it can be probed without adding an SDK. The SDK is a plausible automation adapter; app-server is appropriate only if measured requirements need richer client/session control. Transport selection remains provisional until local preflight and the comparison Work Order finish.
-
-## What is deliberately absent
-
-No Kubernetes, distributed queue, local inference server, vector database, embedding pipeline, dashboard, public listener, or recursive agent-spawning policy is required for the precursor. There is no reason to pay those costs before demonstrating one reliable CPU-only work loop.
+The [coordination contract](coordination.md) separates current acceptance criteria from future automation behavior. Add a Codex adapter only for programmatic execution, a tracker adapter only for actual synchronization, and a scheduler only when bounded batch dispatch is needed. [Transport research](research/coordination-options.md) remains reference material, not a gate.

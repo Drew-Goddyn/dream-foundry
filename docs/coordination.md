@@ -1,53 +1,39 @@
 # Coordination contract
 
-Status: proposed behavior for the prototype. No controller currently enforces it. The bootstrap procedure below is manual and deliberately narrower.
+Status: proposed. The first workboard is a supervised local prototype. Future automation requirements below are not gates for that slice.
 
-## Bootstrap coordination
+## Bootstrap and current slice
 
-The orchestrator assigns complete Work Orders to named, human-launched sessions. Each session gets one worktree or a read-only snapshot plus a separate report directory. Research lanes have disjoint outputs. They publish only sanitized reports on their own branches or through the orchestrator when GitHub writes are unavailable. A single integration owner reconciles reports and updates shared planning documents.
+The human launches DF-BUILD-01 and later a fresh DF-VERIFY-01. The builder uses its own worktree. The reviewer uses the fixed candidate in a separate copy and writable evidence area. Do not make the human relay routine intermediate build steps.
 
-An issue comment saying 'claimed' is not a lock. During this phase the orchestrator explicitly records the sole assignee and does not dispatch the same Work Order twice. Agents propose the next assignment and stop. A persisted work queue and autonomous wake-up mechanism are later capabilities, not implied by AGENTS.md.
+The Workboard module should provide a small CLI for enqueue, claim, submit, assess, status/export, and explicit cancellation. Names may change if the observable workflow becomes simpler. Use one explicit local state root shared by the authorized clients and outside tracked source. Issue comments are discussion, not locks.
 
-## Prototype records
+Work Order snapshots carry an objective, criteria, scope, and revision. Each attempt is a Trial. An Assignment binds a Trial to the worker/session and its permitted lifetime. A Submission is a fixed output plus provenance. An Assessment binds observations to the exact Submission and criteria revision. Preserve these distinctions without turning each noun into its own module.
 
-A Work Order snapshot includes its ID, source issue, revision/content digest, objective, criteria, permitted scope, dependencies, and stopping point. A Trial includes its hypothesis, parent references when relevant, and method. An Assignment includes Trial ID, role label, worker/session handle, input revision, lease generation, deadline, permitted outputs, and resource reservation.
+## Required now
 
-A Submission identifies immutable source and artifact digests, the exact Assignment, its self-test evidence, and known defects. An Assessment binds that Submission to the Work Order/criteria revision and records the reviewer's fresh session, observations, per-criterion PASS/FAIL/BLOCKED, and untested areas. Unknown usage and unknown independence are represented as unknown, never as zero or true.
+**Exclusive claims.** Claiming a ready Trial is an atomic transaction. Two callers contending for it cannot both become the current owner. An unsuccessful claim is a visible outcome, not a silent duplicate assignment.
 
-## State and authority
+**Fixed evidence.** Seal the report into the evidence area before recording its Submission. Record content digest, source revision where applicable, Assignment/session, and criteria revision. Repeating the same ID/digest returns the existing result. The same ID with different contents is a conflict. Missing/changed evidence prevents recording a successful Assessment. Keep the manifest/checks explicit; a digest is not proof of truth.
 
-Suggested Work Order states: proposed, ready, active, awaiting_review, accepted, blocked, cancelled. These are separate from a Trial's execution state and from GitHub issue open/closed state.
+**Independent assessment.** Record a fresh reviewer session and per-criterion PASS/FAIL/BLOCKED. Reject known builder-session reuse, revision mismatch, and a successful status without the required evidence. Session strings alone cannot prove independence; demonstrate two actual sessions during the supervised walkthrough. A simulated reviewer stays labeled simulated.
 
-- Only an authorized dispatcher makes a Work Order eligible and grants an Assignment.
-- A worker can renew its current Assignment, submit evidence, or report a blocker.
-- A completed process offers a Submission; it does not accept the Work Order.
-- A reviewer reports an Assessment; the authorized decision owner records Acceptance.
-- Acceptance does not merge code, publish art, or expand permissions.
+**Reopen.** Closing and reopening the CLI preserves assignments, submissions, and assessments. Database transaction recovery is not a claim of recovering live agent processes.
 
-In the first live loop the human remains the Acceptance and merge owner. Delegating routine acceptance later requires an explicit, versioned policy decision.
+**Cancel.** Explicit cancellation invalidates the current assignment so a late submission cannot advance it; keep the rejected event inspectable. Cancellation of a ledger record does not terminate a manually opened Codex session. Say so in the CLI result. Replacements use a different workspace until the former writer is known idle.
 
-## Failure semantics that must be tested
+**No self-acceptance.** Submitting or scoring an output is not Acceptance. The human remains the initial acceptance/merge owner. Display awaiting-human-acceptance separately from a review PASS.
 
-Claims and reservations are atomic within one local ledger transaction. Assignment generations are monotonically increasing fencing tokens. A result from an expired or superseded generation is quarantined and retained for inspection; it cannot advance the current Work Order.
+## Future automation, test when added
 
-Lease expiry is not proof that the old process has stopped. Before giving a replacement write access, confirm termination or allocate a different isolated workspace and revoke the former assignment's publishing capability. Worker identity and scope checks happen outside model-generated text; knowledge of an ID alone is not authorization.
+Automatic expiry and reassignment require fencing generations, actual process reconciliation, and safe replacement isolation. Lease expiry alone never establishes a stopped process. Controller restart must not reset an allowance or spawn duplicate work. Changes to wall clocks require explicit reconciliation rather than blind trust.
 
-Delivery can be at least once. Repeating the same submission identifier and digest has no additional ledger effect; the same identifier with a different digest is a conflict. Do not claim exactly-once external effects. GitHub publication needs a durable outbox/reconciliation marker because a request may succeed before the connection fails.
+Programmatic worker execution needs owned process groups, targeted cancellation, actual session identities, permission reapplication, complete results, and unknown-usage accounting. External publication needs durable retry/reconciliation markers because a timed-out request may already have succeeded. No exactly-once remote-effect promise.
 
-After controller restart, first reconcile recorded workspaces and known processes. Quarantine ownership that cannot be established. Do not assume a monotonic timer survives a restart, or blindly trust expired wall-clock leases after clock changes. Recovery must preserve the original campaign allowance.
+Work Order or policy changes create a new revision; they do not retroactively improve an old Assessment or silently widen an active grant. These principles apply now, while the automatic machinery is deferred.
 
-Cancellation stops new dispatch, marks pending work cancelled, requests termination of owned process groups, and records what actually stopped. Already committed external effects may remain; surface them instead of promising rollback. Never kill an unrelated human session by a fuzzy process-name match.
+## Resources and trust
 
-## Isolation and evidence
+The current allowance is one human-launched build assignment and a separately human-launched review of its fixed result. Routine local code/test repairs inside the assignment do not need repeated human approval. Further model sessions or unattended batches require a new explicit launch/allowance.
 
-No concurrent writers share a worktree. Raw logs live outside the repository; every worker and reviewer has its own temporary paths. The exact commit plus any captured uncommitted diff must be identified before review. Prefer clean commits for reviewable submissions.
-
-Inspect authorship/session overlap when establishing fresh-context review. The same model in a new session can review; the same builder renamed 'reviewer' cannot. Same GitHub account does not establish or refute context independence, but it does limit formal GitHub approvals.
-
-A policy/criteria change does not upgrade old Assessments. Reassess under the new revision or keep historical results labeled. Model outputs and fetched documents cannot issue work or alter policy.
-
-## Resource accounting
-
-Before dispatch, reserve from a human-approved allowance. Record actual model usage when the transport provides it, plus elapsed time and child-process outcomes. Missing price or subscription telemetry means cost is unknown; use explicit task/turn/time bounds rather than invent dollar accuracy.
-
-A proposed limit is not enforcement. Demonstrate timeout, cancellation, lease, and accounting behavior using [the experiment suite](experiments/precursor-suite.md) before unattended use. No script or configuration file in this foundation starts workers.
+Keep public reporting sanitized, raw logs local, and runtime state outside Git. The prototype coordinates trusted same-user agents; it does not enforce adversarial security simply by assigning role names. See [operating policy](operating-policy.md).
