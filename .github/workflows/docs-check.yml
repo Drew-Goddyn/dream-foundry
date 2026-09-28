@@ -1,0 +1,30 @@
+name: Documentation checks
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docs-check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - name: Check out source
+        # actions/checkout v7.0.1; upstream release and commit verified at bootstrap.
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Check documentation structure
+        run: python3 tools/check_docs.py
+      - name: Exercise checker failure fixtures
+        run: python3 -m unittest discover -s tests
