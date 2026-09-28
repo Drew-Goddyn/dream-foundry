@@ -1,0 +1,18 @@
+{
+  "repository": "alexgreensh/anidoodle",
+  "revision": "03ddf534328962f8a91eb115e3ae67e03da4de5a",
+  "files": {
+    "core.ts": "2e9a77dfa6ddd8834211abe20f44df645f215823248aae5399c2ddb8dd3bd6b1",
+    "bake.ts": "e0f7be7c14a5afd11c1f33f84f6d79034dabfc7914bace73a618bec9b9103633",
+    "music/render.ts": "e1acccfe862bbf8a5a5a2724831ff247b879fed98b3982ce3895d8f7a9d12c00",
+    "music/plan.ts": "f046f0f530d2758fb05f14bdadd959b5601d11108ff57863c28606a0d861a172",
+    "music/perform.ts": "ea80db956de9ee8d288d0a2f0d777f116095c19b49d63d880010b1eeb647e154",
+    "music/dsp.ts": "0eb24d647a299a2040d3ce052fdc0c61706d80ec519f79d6dcd2f3ee4db64913",
+    "music/instruments.ts": "a3155186f8cbc21ce8b7a27b9fa35a7b8cbf2854d58749cc6d3694fc358a5304",
+    "music/theory.ts": "1cce91c9f3f1a3a7e0d17e8da9c5bc494fd922b66c8c03ec642a8a9ab1f9501a",
+    "music/meter.ts": "9a56f3fbebed61b901778bab5d18ddad57aa3671f0f22fb88c9bac88256645a0",
+    "music/guards.ts": "f29e20e3622db3b39883b1cfaac4f4033c1d20459d5c00942f413ba6ea4a97b0",
+    "music/piano.ts": "cce537a33be09016b0bd469c9a9cf2bc19fd2afc3bf921b6ee77d60206550f58",
+    "music/tables.ts": "7cce9d948ef76303d8ecc5aa3c7ffd7917f696151c6bc586f622726aa640aa45"
+  }
+}
