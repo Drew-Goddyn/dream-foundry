@@ -5,6 +5,9 @@ import {pathToFileURL} from 'node:url';
 import {request,REST,replay} from './gesture.mjs';
 const drawing=p=>p.nodes.map(n=>({id:n.id,local:n.local,world:n.world,opacity:n.worldOpacity,commands:n.commands}));
 const node=(p,id)=>p.nodes.find(n=>n.id===id);
+const cubic=(p,c,t)=>{const u=1-t;return [0,1].map(k=>u*u*u*p[k]+3*u*u*t*c[1+k]+3*u*t*t*c[3+k]+t*t*t*c[5+k]);};
+const cross=(a,b,c)=>(b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]);
+const intersects=(a,b,c,d)=>cross(a,b,c)*cross(a,b,d)<0&&cross(c,d,a)*cross(c,d,b)<0;
 const close=(a,b,epsilon=1e-7)=>assert.ok(Math.abs(a-b)<epsilon,`${a} differs from ${b}`);
 export async function verify({Motor,doc,out,motor,chrome,serve}) {
   const results=[],check=(name,fn)=>{fn();results.push({name,result:'PASS'});};
@@ -23,13 +26,21 @@ export async function verify({Motor,doc,out,motor,chrome,serve}) {
     assert.deepEqual(i.evaluate(7.4),j.replay(r,7.4));
     assert.deepEqual(drawing(i.evaluate(7.5)),drawing(Motor.createInstance(compiled,null).evaluate(0)));
   });
-  check('tail stays on its drive pin and the bracing fingers stay on the ledge through 181 sampled poses',()=>{
+  check('tail retains a visible unfolded ribbon at its drive pin and fingers stay on the ledge through 181 sampled poses',()=>{
     const i=Motor.createInstance(compiled,null);
     for(let f=0;f<=180;f++){
       const p=i.replay(r,f/25),tail=node(p,'creature-silhouette').commands[0],pin=node(p,'tail-attachment').world;
       close(tail[1],pin[4]);close(tail[2],pin[5]);
       const hand=node(p,'bracing-arm').commands[3];close(hand[5],538);close(hand[6],490);
       assert.ok(p.nodes.every(n=>n.world.every(Number.isFinite)));
+      // Expanded strain/return captures exposed a folded tail that an anchor-only
+      // check missed. Compare both sides of the actual evaluated cubic band.
+      const commands=node(p,'creature-silhouette').commands,start=commands[0].slice(1),last=commands.at(-2);
+      const outside=['C',...last.slice(3,5),...last.slice(1,3),...commands.at(-3).slice(-2)],a=[],b=[];
+      for(let k=0;k<=40;k++){a.push(cubic(start,commands[1],k/40));b.push(cubic(start,outside,k/40));
+        if(k>=8&&k<=36)assert.ok(Math.hypot(a[k][0]-b[k][0],a[k][1]-b[k][1])>=4,`tail too thin at ${f/25}s`);
+      }
+      for(let k=1;k<=40;k++)for(let j=1;j<=40;j++)assert.ok(!intersects(a[k-1],a[k],b[j-1],b[j]),`tail sides cross at ${f/25}s`);
     }
   });
   check('reset restores rest, retained snapshots remain detached, and instances are independent',()=>{

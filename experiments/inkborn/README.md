@@ -61,6 +61,23 @@ capture. Three native poses are sampled at 0.3, 2.12 and 3.6 seconds. The full
 replay includes near/far reaches, reversal, release, re-grab and return to rest.
 The page's **Watch the gesture** button uses those same input records.
 
+`--variant bookplate` reconstructs the first reviewed candidate, before the
+evening acting and ink revisions. `--variant initial` retains the original rough
+result. Both are capture/comparison references: the expanded tail-fold check
+correctly rejects their previously unobserved pinching during strain.
+
+Add `--study` for four extra native poses: strain, interrupted release, re-grab,
+and settlement. These exposed a tail fold that the original three poses missed.
+The current candidate keeps consistent deformation fields on the two sides of
+the tail ribbon; verification now also rejects crossing boundaries and a
+vanishing band of ink through the sampled replay.
+
+Add `--film` to encode Motor's full 7.5-second replay sequence as a local MP4.
+Set `ffmpeg` in the private configuration to an absolute path to an existing
+installation. The command adds a Replay film link to the preview and retains
+native frames plus a film identity receipt. This is a Motor-evaluated animation,
+not live browser performance evidence. No encoder is downloaded.
+
 `art.mjs` is the editable scene-specific authoring source; `tuning.json` holds the
 two retained variants. `gesture.mjs` maps the drop to input requests and owns the
 replay. Motor evaluates all input smoothing, held poses and Bézier skinning. The

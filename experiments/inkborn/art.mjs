@@ -98,7 +98,7 @@ export function buildArt(tune) {
   if(tune.connected){bone('crown',365,251);}else{group('crown',365,251);}held('crown','y',[[0,251],[.3,243],[1,207]]);
   for(let j=0;j<5;j++){
     const id='crown-petal-'+j;group(id,0,0,'crown');
-    if(tune.connected){held(id,'scaleX',[[0,.3],[.4,.45],[1,1]]);held(id,'scaleY',[[0,.25],[.4,.4],[1,1]]);}
+    if(tune.connected){held(id,'scaleX',[[0,tune.expressive?.18:.3],[.4,.45],[1,1]]);held(id,'scaleY',[[0,tune.expressive?.08:.25],[.4,.4],[1,1]]);}
     held(id,'rotation',[[0,(j-2)*(tune.connected?72:6)],[.4,(j-2)*(tune.connected?42:8)],[1,(j-2)*34*tune.spread]]);
     path(id+'-outline',[['M',0,10],['C',-18,-22,-32,-71,-11,-98],['L',0,-119-j*3],['C',30,-79,27,-37,0,10],['Z']],j%2?C.light:C.brass,C.ink,1.8,id);
     line([[0,5],[-5,-56],[0,-110]],1.2,C.ink,id);
@@ -125,19 +125,34 @@ export function buildArt(tune) {
   // Ink creature: one tapering, curved silhouette, from wheel knot to upturned muzzle.
   bone('body',625,413);bone('head',708,287);bone('brace',550,487);bone('reach',781,295);
   bind('reachX','head','x',.3);bind('reachY','head','y',.25);bind('pull','head','x',52);bind('pull','head','y',-39*tune.headLift);
-  bind('pull','body','x',tune.connected?42:33);bind('pull','body','y',tune.connected?-42:-16);bind('pull','body','rotation',tune.connected?-12:-8);
+  if(tune.expressive){
+    held('body','x',[[0,615],[.38,606],[1,672]]);held('body','y',[[0,428],[.38,432],[1,364]]);held('body','rotation',[[0,8],[.38,3],[1,-17]]);
+    held('head','rotation',[[0,7],[.42,-11],[1,-5]]);
+  }else{bind('pull','body','x',tune.connected?42:33);bind('pull','body','y',tune.connected?-42:-16);bind('pull','body','rotation',tune.connected?-12:-8);}
   if(tune.connected){bone('elbow',637,450);held('elbow','x',[[0,637],[.38,612],[1,652]]);held('elbow','y',[[0,450],[.38,468],[1,425]]);}
   bind('reachX','reach','x',.76);bind('reachY','reach','y',.8);
   const bodyWeight=(x,y)=>blend('body','head',clip((395-y)/112));
-  const silhouette=[['M',480,468],['C',485,491,534,556,584,541],['C',638,523,579,479,583,443],['C',588,396,650,390,664,357],['C',674,334,656,319,660,298],['C',658,278,648,257,650,242],['C',667,244,681,258,686,271],['C',704,244,736,246,755,266],['C',761,275,760,287,777,292],['C',781,300,769,312,754,310],['C',743,339,716,351,708,379],['C',695,423,652,449,656,494],['C',660,542,615,581,567,567],['C',511,550,476,506,480,468],['Z']];
-  const creatureWeight=(x,y)=>x<540?blend('wheel','body',clip((x-480)/60)):bodyWeight(x,y);
-  path('creature-silhouette',silhouette,C.ink,C.ink,1.6);skin('creature-silhouette',creatureWeight);
+  const silhouette=tune.expressive?[['M',480,468],['C',492,488,544,548,581,530],['C',619,511,566,477,574,441],['C',583,396,642,394,660,356],['C',671,331,649,318,653,296],['C',651,278,641,260,647,240],['C',666,244,680,259,686,271],['C',704,244,736,246,755,266],['C',761,275,760,287,777,292],['C',781,300,769,312,754,310],['C',743,339,716,351,708,379],['C',699,420,646,444,658,491],['C',674,545,614,590,561,570],['C',510,549,476,506,480,468],['Z']]:[['M',480,468],['C',485,491,534,556,584,541],['C',638,523,579,479,583,443],['C',588,396,650,390,664,357],['C',674,334,656,319,660,298],['C',658,278,648,257,650,242],['C',667,244,681,258,686,271],['C',704,244,736,246,755,266],['C',761,275,760,287,777,292],['C',781,300,769,312,754,310],['C',743,339,716,351,708,379],['C',695,423,652,449,656,494],['C',660,542,615,581,567,567],['C',511,550,476,506,480,468],['Z']];
+  const creatureWeight=(x,y)=>tune.expressive?(x<503?one('wheel'):bodyWeight(x,y)):(x<540?blend('wheel','body',clip((x-480)/60)):bodyWeight(x,y));
+  path('creature-silhouette',silhouette,C.ink,tune.expressive?null:C.ink,1.6);skin('creature-silhouette',creatureWeight);
   // Several deliberately offset washes: thin first stain, concentrated pigment on turning form.
   const wash=[['M',591,538],['C',623,503,600,473,617,437],['C',631,407,679,386,688,351],['C',700,329,679,294,697,276],['C',723,259,745,269,745,288],['C',716,305,726,331,709,359],['C',688,401,651,421,646,456],['C',635,489,650,529,605,548],['Z']];
-  for(let i=0;i<3;i++){path('body-wash-'+i,tune.connected?wash.map(c=>c.map((v,k)=>k===0?v:v+(k%2?i*1.5:-i*.6))):wash,i===0?'#527c7a':i===1?'#70928a':'#98aaa0',null,1,null,{opacity:.15+i*.025});skin('body-wash-'+i,creatureWeight);}
+  for(let i=0;i<(tune.expressive?0:3);i++){path('body-wash-'+i,tune.connected?wash.map(c=>c.map((v,k)=>k===0?v:v+(k%2?i*1.5:-i*.6))):wash,i===0?'#527c7a':i===1?'#70928a':'#98aaa0',null,1,null,{opacity:.15+i*.025});skin('body-wash-'+i,creatureWeight);}
   const bodyMarks=[[[496,493],[549,546],[581,550]],[[603,516],[608,480],[626,442],[664,411]],[[630,421],[658,401],[680,374]],[[683,323],[680,305],[685,288]]];
-  for(const pts of bodyMarks){const id=line(pts,2.2,C.light,null,.57);skin(id,creatureWeight);}
-  for(let i=0;i<16;i++){const y=408+i*7,x=637-18*Math.sin(i*.21);const id=line([[x,y],[x+9,y-2],[x+17,y-10]],.9,'#95b0a0',null,.45);skin(id,bodyWeight);}
+  for(const pts of (tune.expressive?[]:bodyMarks)){const id=line(pts,2.2,C.light,null,.57);skin(id,creatureWeight);}
+  for(let i=0;i<(tune.expressive?0:16);i++){const y=408+i*7,x=637-18*Math.sin(i*.21);const id=line([[x,y],[x+9,y-2],[x+17,y-10]],.9,'#95b0a0',null,.45);skin(id,bodyWeight);}
+  if(tune.expressive){
+    // Pigment pools inside the turn; broad tapering paper cuts follow the drawn force.
+    const deposits=[
+      ['pool-at-haunch',[['M',579,447],['C',583,424,607,411,629,408],['C',601,437,611,468,626,491],['C',643,523,622,553,586,553],['C',610,532,594,511,586,486],['C',578,471,576,457,579,447],['Z']],'#091f29',.8],
+      ['washed-spine',[['M',598,536],['C',625,512,608,480,623,450],['C',637,420,665,407,682,374],['C',691,356,699,340,715,328],['C',700,358,706,376,689,401],['C',670,430,639,440,637,471],['C',634,505,643,532,607,546],['Z']],'#547f79',.5],
+      ['pulled-paper',[['M',604,539],['C',623,527,628,513,624,496],['C',620,476,628,459,640,444],['C',631,468,635,484,637,500],['C',640,519,627,535,604,539],['Z']],C.paper,.75],
+      ['shoulder-paper',[['M',646,428],['C',669,405,673,384,687,371],['C',675,398,674,410,646,428],['Z']],C.paper,.8],
+      ['cheek-wash',[['M',686,305],['C',693,287,715,278,735,281],['C',716,289,699,304,701,319],['C',695,331,685,324,686,305],['Z']],'#547f79',.4]
+    ];
+    for(const [id,cmd,color,opacity] of deposits){path(id,cmd,color,null,1,null,{opacity});skin(id,creatureWeight);}
+
+  }
   // A planted hand, then a reaching forearm. Both are skin fields between fixed named attachments.
   const brace=tune.connected?[['M',680,367],['C',653,376,664,422,637,440],['C',612,457,563,462,548,478],['C',537,478,533,485,538,490],['L',558,490],['C',580,488,624,487,650,462],['C',673,442,676,410,695,382],['Z']]:[['M',680,367],['C',650,371,622,407,596,430],['C',579,445,556,467,548,478],['C',537,478,533,485,538,490],['L',558,490],['C',564,485,557,480,559,477],['C',592,462,618,445,637,423],['C',656,407,684,399,695,382],['Z']];
   const braceWeights=(x,y)=>y>420?blend('brace','elbow',clip((x-572)/57)):attach(bodyWeight(x,y),'elbow',clip((y-377)/43));
@@ -146,8 +161,8 @@ export function buildArt(tune) {
     const crease=line([[668,403],[655,429],[637,446],[614,458]],3.1,C.ink);skin(crease,braceWeights);
     const shine=line([[604,469],[624,467],[645,453]],1.7,C.light,null,.62);skin(shine,braceWeights);
     path('palm-pressure',[['M',539,487],['C',547,484,558,486,562,492],['L',536,492],['Z']],C.ink);
-    for(let j=0;j<8;j++){const id=line([[646+j*.75,393+j*6],[650+j*.8,399+j*6]],1.1,C.paper,null,.36);skin(id,bodyWeight);}
-    for(let j=0;j<4;j++){const id=line([[513+j*5,522+j*3],[533+j*4,541+j*2],[555+j*2,549+j]],.8,C.paper,null,.45);skin(id,creatureWeight);}
+    for(let j=0;j<(tune.expressive?0:8);j++){const id=line([[646+j*.75,393+j*6],[650+j*.8,399+j*6]],1.1,C.paper,null,.36);skin(id,bodyWeight);}
+    for(let j=0;j<(tune.expressive?0:4);j++){const id=line([[513+j*5,522+j*3],[533+j*4,541+j*2],[555+j*2,549+j]],.8,C.paper,null,.45);skin(id,creatureWeight);}
   }
   for(let i=0;i<3;i++)line([[539+i*6,484],[543+i*6,488]],1.3,C.paper);
   const arm=[['M',712,344],['C',736,343,736,323,749,317],['C',757,311,768,313,776,304],['L',781,288],['C',785,284,786,289,785,295],['C',794,287,797,289,792,297],['C',804,294,802,300,795,304],['C',803,306,799,311,788,310],['C',777,327,760,328,754,341],['C',747,365,724,375,711,360],['Z']];
@@ -155,19 +170,24 @@ export function buildArt(tune) {
   const armShine=line([[721,349],[741,333],[753,323],[772,318]],2,C.light,null,.58);skin(armShine,(x,y)=>tune.connected?attach(bodyWeight(x,y),'reach',clip((x-740)/45)):blend('head','reach',clip((x-712)/68)));
   // Face is in the head's local frame, including asymmetric lids, pupils, brow and muzzle.
   group('face',0,0,'head');
-  path('far-eye',[['M',11,-16],['C',15,-29,28,-31,32,-20],['C',33,-8,20,-4,11,-16],['Z']],C.paper,C.ink,1.2,'face');
-  path('near-eye',[['M',-20,-10],['C',-18,-32,4,-40,15,-21],['C',21,-1,-5,10,-20,-10],['Z']],C.paper,C.ink,1.8,'face');
-  ellipse('pupil-near',3,-16,5.2,9,C.ink,null,'face');ellipse('pupil-far',26,-19,3.2,6,C.ink,null,'face');
+  if(tune.expressive){group('near-ocular',0,0,'face');group('far-ocular',0,0,'face');held('near-ocular','scaleY',[[0,1],[.4,.48],[.62,.65],[1,1.13]]);held('far-ocular','scaleY',[[0,.85],[.4,.62],[1,1.08]]);}
+  path('far-eye',[['M',11,-16],['C',15,-29,28,-31,32,-20],['C',33,-8,20,-4,11,-16],['Z']],C.paper,C.ink,1.2,tune.expressive?'far-ocular':'face');
+  path('near-eye',[['M',-20,-10],['C',-18,-32,4,-40,15,-21],['C',21,-1,-5,10,-20,-10],['Z']],C.paper,C.ink,1.8,tune.expressive?'near-ocular':'face');
+  ellipse('pupil-near',3,-16,5.2,9,C.ink,null,tune.expressive?'near-ocular':'face');ellipse('pupil-far',26,-19,3.2,6,C.ink,null,tune.expressive?'far-ocular':'face');
   bind('reachX','pupil-near','x',.014);bind('reachY','pupil-near','y',.014);bind('reachX','pupil-far','x',.007);
-  ellipse('glint',1,-20,1.5,2,C.paper,null,'face');
+  ellipse('glint',1,-20,1.5,2,C.paper,null,tune.expressive?'near-ocular':'face');
   if(tune.connected){
     path('focused-lid',[['M',-23,-18],['C',-14,-38,9,-41,18,-18],['C',6,-21,-5,-24,-23,-18],['Z']],C.ink,null,1,'face',{opacity:0});
-    held('focused-lid','opacity',[[0,0],[.33,.75],[.65,.5],[1,.06]]);
+    held('focused-lid','opacity',tune.expressive?[[0,0],[1,0]]:[[0,0],[.33,.75],[.65,.5],[1,.06]]);
     path('lower-eye-pressure',[['M',-20,-2],['Q',-3,7,12,-5]],null,C.ink,2,'face');
   }
-  line([[-23,-34],[-8,-41],[5,-37]],3,C.ink,'face');
+  const brow=line([[-23,-34],[-8,-41],[5,-37]],3,C.ink,'face');if(tune.expressive){held(brow,'y',[[0,0],[.42,15],[1,-4]]);held(brow,'rotation',[[0,-4],[.42,18],[1,-8]]);}
   line([[15,-36],[25,-37],[31,-33]],2,C.ink,'face');
-  line([[35,9],[48,12],[60,7]],1.7,C.paper,'face',.9);
+  const mouth=line([[35,9],[48,12],[60,7]],1.7,C.paper,'face',.9);
+  if(tune.expressive){held(mouth,'opacity',[[0,.9],[.25,0],[1,0]]);
+    path('effort-mouth',[['M',21,14],['C',27,10,35,9,41,11],['L',38,14],['C',32,13,27,14,21,14],['Z']],C.paper,null,1,'face',{opacity:0});held('effort-mouth','opacity',[[0,0],[.3,1],[.64,1],[.86,0],[1,0]]);
+    path('wonder-mouth',[['M',25,14],['C',27,7,38,6,40,12],['C',42,20,34,26,28,22],['C',24,20,24,17,25,14],['Z']],C.paper,null,1,'face',{opacity:0});held('wonder-mouth','opacity',[[0,0],[.66,0],[.9,.95],[1,.95]]);
+  }
   line([[31,24],[39,20]],1.1,C.paper,'face',.65);
   line([[-39,-25],[-47,-34],[-49,-42]],2,C.wash,'face');
   for(let i=0;i<4;i++)line([[28+i*4,0],[30+i*4,1]],1,C.light,'face',.6);

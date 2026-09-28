@@ -11,7 +11,7 @@ import {replay,POSES} from './gesture.mjs';
 const here=path.dirname(fileURLToPath(import.meta.url)), repo=path.resolve(here,'../..');
 const argv=process.argv.slice(2), option=k=>argv[argv.indexOf(k)+1];
 if(argv.includes('--help')||!argv.includes('--config')||!argv.includes('--out')) {
-  console.log('node experiments/inkborn/run.mjs --config /private/local-tools.json --out /private/new-inkborn [--variant initial|candidate] [--capture] [--verify] [--compare /private/initial-output] [--serve]');
+  console.log('node experiments/inkborn/run.mjs --config /private/local-tools.json --out /private/new-inkborn [--variant initial|bookplate|candidate] [--capture] [--study] [--film] [--verify] [--compare /private/initial-output] [--serve]');
   console.log('Config: {"motorRoot":"/existing/authorized/installation","chrome":"/installed/chrome"}. No installs. Output must be new and outside any Git worktree.');
   process.exit(argv.includes('--help')?0:2);
 }
@@ -23,6 +23,7 @@ try {
   const motor=await fs.realpath(config.motorRoot),out=path.resolve(option('--out'));
   for(const p of ['motor','dist/motor.js','dist/player.js','dist/renderer-selection.js','bundle.json','renderer/manifest.json'])await fs.access(path.join(motor,p));
   await fs.access(config.chrome);
+  if(argv.includes('--film')){if(!config.ffmpeg||!path.isAbsolute(config.ffmpeg))throw Error('--film requires an absolute path to existing ffmpeg in the private configuration.');await fs.access(config.ffmpeg);}
   let parent=path.dirname(out);await fs.mkdir(parent,{recursive:true});parent=await fs.realpath(parent);
   const destination=path.join(parent,path.basename(out));
   if(spawnSync('git',['-C',parent,'rev-parse','--show-toplevel'],{encoding:'utf8'}).status===0)throw Error('Private output must be outside every Git worktree.');
@@ -30,7 +31,7 @@ try {
   const selection=await resolveRenderer({backend:'rive',directory:path.join(motor,'renderer'),pixelRatio:1});
   const Motor=await import(pathToFileURL(path.join(motor,'dist/motor.js')));
   const tuning=JSON.parse(await fs.readFile(path.join(here,'tuning.json'))),variant=argv.includes('--variant')?option('--variant'):'candidate';
-  if(!['initial','candidate'].includes(variant))throw Error('variant must be initial or candidate');
+  if(!['initial','bookplate','candidate'].includes(variant))throw Error('variant must be initial, bookplate or candidate');
   const doc=Motor.parseDocument(buildArt(tuning[variant]));
   await fs.mkdir(destination); // Refuse overwrites; failed evidence is retained.
   const cli=(args)=>{
@@ -54,9 +55,18 @@ try {
   const bundle=JSON.parse(await fs.readFile(path.join(motor,'bundle.json')));
   const identity={format:1,foundryBase:'d3d358d4b44400cf24d72df8e243f0240221665c',foundryHead:spawnSync('git',['rev-parse','HEAD'],{cwd:repo,encoding:'utf8'}).stdout.trim(),sourceHashes,variant,tuning:tuning[variant],motorSource:bundle.source,motorRuntimeSHA256:hash(await fs.readFile(path.join(motor,'dist/motor.js'))),renderer:selection.selection,anidoodle:'03ddf534328962f8a91eb115e3ae67e03da4de5a',sceneSHA256:hash(await fs.readFile(scene)),replaySHA256:hash(await fs.readFile(path.join(destination,'replay.json'))),independentReview:'pending human-launched non-author'};
   await json(path.join(destination,'identity.json'),identity);
-  if(argv.includes('--capture'))for(const pose of POSES)cli(['snapshot',scene,path.join(destination,pose.name),'--time',String(pose.time),'--no-animation','--replay',path.join(destination,'replay.json'),'--renderer','rive','--dpr','1']);
+  const captures=[...POSES,...(argv.includes('--study')?[{name:'04-strain',time:2.55},{name:'05-release',time:4.40},{name:'06-regrab',time:4.75},{name:'07-settled',time:7.3}]:[])];
+  if(argv.includes('--capture')||argv.includes('--study'))for(const pose of captures)cli(['snapshot',scene,path.join(destination,pose.name),'--time',String(pose.time),'--no-animation','--replay',path.join(destination,'replay.json'),'--renderer','rive','--dpr','1']);
+  if(argv.includes('--film')){
+    const frames=path.join(destination,'replay-film'),receipt=JSON.parse(cli(['capture',scene,frames,'--no-animation','--replay',path.join(destination,'replay.json'),'--end','7.5','--renderer','rive','--dpr','1']));
+    const video=path.join(destination,'play/replay.mp4');
+    const encoded=spawnSync(config.ffmpeg,['-v','error','-n','-framerate',String(receipt.fps),'-i',path.join(frames,'frame-%04d.png'),'-c:v','libx264','-crf','18','-pix_fmt','yuv420p','-movflags','+faststart',video],{encoding:'utf8'});
+    if(encoded.status!==0)throw Error('Replay film encoding failed: '+(encoded.stderr||encoded.error));
+    await json(path.join(destination,'film.json'),{kind:'Motor-evaluated replay frames; not live performance capture',fps:receipt.fps,frames:receipt.count,duration:receipt.count/receipt.fps,sceneSHA256:identity.sceneSHA256,replaySHA256:identity.replaySHA256,videoSHA256:hash(await fs.readFile(video)),normalSpeedAestheticReview:'unverified'});
+    const host=path.join(destination,'play/index.html');await fs.writeFile(host,(await fs.readFile(host,'utf8')).replace('<!-- replay-film -->','<a class="film" href="./replay.mp4">Replay film</a>'));
+  }
   if(argv.includes('--compare')){
-    if(!argv.includes('--capture'))throw Error('--compare requires --capture');
+    if(!argv.includes('--capture')&&!argv.includes('--study'))throw Error('--compare requires --capture or --study');
     const before=path.resolve(option('--compare')),prior=JSON.parse(await fs.readFile(path.join(before,'identity.json')));
     if(prior.replaySHA256!==identity.replaySHA256)throw Error('Comparison rejected: replay bytes differ.');
     const comparison=path.join(destination,'play/comparison');await fs.mkdir(comparison);
@@ -78,7 +88,7 @@ try {
   }
 } catch(e) {console.error('INKBORN: '+e.message);process.exitCode=1;}
 export function serve(root) {
-  const types={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.json':'application/json','.wasm':'application/wasm','.png':'image/png'};
+  const types={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.json':'application/json','.wasm':'application/wasm','.png':'image/png','.mp4':'video/mp4'};
   return createServer(async(req,res)=>{try{
     const pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname),file=path.resolve(root,'.'+(pathname.endsWith('/')?pathname+'index.html':pathname));
     if(!file.startsWith(root+path.sep))throw Error('outside output');
