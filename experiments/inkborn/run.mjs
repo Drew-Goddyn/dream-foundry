@@ -55,7 +55,7 @@ try {
   const bundle=JSON.parse(await fs.readFile(path.join(motor,'bundle.json')));
   const identity={format:1,foundryBase:'d3d358d4b44400cf24d72df8e243f0240221665c',foundryHead:spawnSync('git',['rev-parse','HEAD'],{cwd:repo,encoding:'utf8'}).stdout.trim(),sourceHashes,variant,tuning:tuning[variant],motorSource:bundle.source,motorRuntimeSHA256:hash(await fs.readFile(path.join(motor,'dist/motor.js'))),renderer:selection.selection,anidoodle:'03ddf534328962f8a91eb115e3ae67e03da4de5a',sceneSHA256:hash(await fs.readFile(scene)),replaySHA256:hash(await fs.readFile(path.join(destination,'replay.json'))),independentReview:'pending human-launched non-author'};
   await json(path.join(destination,'identity.json'),identity);
-  const captures=[...POSES,...(argv.includes('--study')?[{name:'04-strain',time:2.55},{name:'05-release',time:4.40},{name:'06-regrab',time:4.75},{name:'07-settled',time:7.3}]:[])];
+  const captures=[...POSES,...(argv.includes('--study')?[{name:'04-strain',time:2.55},{name:'05-release',time:4.40},{name:'06-regrab',time:4.75},{name:'07-settled',time:7.3},{name:'08-opening',time:2.68},{name:'09-crown',time:2.85}]:[])];
   if(argv.includes('--capture')||argv.includes('--study'))for(const pose of captures)cli(['snapshot',scene,path.join(destination,pose.name),'--time',String(pose.time),'--no-animation','--replay',path.join(destination,'replay.json'),'--renderer','rive','--dpr','1']);
   if(argv.includes('--film')){
     const frames=path.join(destination,'replay-film'),receipt=JSON.parse(cli(['capture',scene,frames,'--no-animation','--replay',path.join(destination,'replay.json'),'--end','7.5','--renderer','rive','--dpr','1']));
@@ -70,12 +70,13 @@ try {
     const before=path.resolve(option('--compare')),prior=JSON.parse(await fs.readFile(path.join(before,'identity.json')));
     if(prior.replaySHA256!==identity.replaySHA256)throw Error('Comparison rejected: replay bytes differ.');
     const comparison=path.join(destination,'play/comparison');await fs.mkdir(comparison);
-    await fs.copyFile(path.join(here,'comparison.html'),path.join(comparison,'index.html'));
-    for(const pose of POSES){
+    const extra=captures.slice(POSES.length).map(p=>`<button data-pose="${p.name}" aria-pressed="false">${p.name.slice(0,2)} · ${p.name.slice(3).replaceAll('-',' ')}</button>`).join('');
+    await fs.writeFile(path.join(comparison,'index.html'),(await fs.readFile(path.join(here,'comparison.html'),'utf8')).replace('<!-- study-poses -->',extra));
+    for(const pose of captures){
       await fs.copyFile(path.join(before,pose.name,'frame.png'),path.join(comparison,'before-'+pose.name+'.png'));
       await fs.copyFile(path.join(destination,pose.name,'frame.png'),path.join(comparison,'after-'+pose.name+'.png'));
     }
-    await json(path.join(comparison,'identities.json'),{before:prior,after:identity});
+    await json(path.join(comparison,'identities.json'),{before:prior,after:identity,poses:captures});
   }
   if(argv.includes('--verify')){
     const {verify}=await import('./verify.mjs');await verify({Motor,doc,out:destination,motor,chrome:config.chrome,serve});

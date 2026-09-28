@@ -48,14 +48,16 @@ Retain the first result and generate the candidate against it:
 
 ```sh
 node experiments/inkborn/run.mjs --config /private/local-tools.json \
-  --out /private/inkborn-initial --variant initial --capture
+  --out /private/inkborn-initial --variant initial --capture --study
 node experiments/inkborn/run.mjs --config /private/local-tools.json \
-  --out /private/inkborn-candidate --capture --verify \
+  --out /private/inkborn-candidate --capture --study --verify \
   --compare /private/inkborn-initial --serve
 ```
 
 Open `/comparison/` on the candidate URL. Comparison rejects mismatched replay
-hashes. The original initial drawing and tuning are preserved as a comparison
+hashes. With `--study`, build both versions with that flag: all nine requested
+poses must exist. The comparison opens on strain and includes the transition,
+release and re-grab poses. Without `--study`, it compares the three key poses. The original initial drawing and tuning are preserved as a comparison
 variant; they deliberately retain the visible problems discovered in the first
 capture. Three native poses are sampled at 0.3, 2.12 and 3.6 seconds. The full
 replay includes near/far reaches, reversal, release, re-grab and return to rest.
@@ -66,11 +68,17 @@ evening acting and ink revisions. `--variant initial` retains the original rough
 result. Both are capture/comparison references: the expanded tail-fold check
 correctly rejects their previously unobserved pinching during strain.
 
-Add `--study` for four extra native poses: strain, interrupted release, re-grab,
-and settlement. These exposed a tail fold that the original three poses missed.
+Add `--study` for six extra native poses: strain, interrupted release, re-grab,
+settlement, plate opening and crown opening. These exposed a tail fold that the original three poses missed.
 The current candidate keeps consistent deformation fields on the two sides of
 the tail ribbon; verification now also rejects crossing boundaries and a
 vanishing band of ink through the sampled replay.
+
+The candidate opens the engraved plates from the lower pivots upward and holds
+the crown until the final part of the pull. Shape, rotation, pigment and engraving
+follow each plate’s interval. Release traverses those same partial assemblies in
+reverse; the closed and fully opened drawings are preserved. The two extra
+transition samples compare this staging without changing the recorded gesture.
 
 Add `--film` to encode Motor's full 7.5-second replay sequence as a local MP4.
 Set `ffmpeg` in the private configuration to an absolute path to an existing

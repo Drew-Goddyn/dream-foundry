@@ -9,7 +9,8 @@
     "headLift": 1.15,
     "pigment": 0.84,
     "connected": true,
-    "expressive": true
+    "expressive": true,
+    "stagedBloom": true
   },
   "bookplate": {
     "spread": 1.05,

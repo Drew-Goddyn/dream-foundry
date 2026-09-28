@@ -53,9 +53,12 @@ export function buildArt(tune) {
     const leaves=[[-1,-153,101,.7],[1,-121,127,1],[-1,-81,113,.85],[1,-42,88,.68]];
     for(let j=0;j<leaves.length;j++){
       const [d,y,len,size]=leaves[j],id=p+'-leaf-'+j;
+      // The working press opens from the lower plates upward; the crown answers last.
+      const onset=.12+(3-j)*.095+(side===1?.035:0),finish=.68+(3-j)*.09+(side===1?.015:0);
+      const unfold=(closed,open)=>[[0,closed],[onset,closed],[finish,open],[1,open]];
       group(id,0,y,p);const initial=tune.connected?0:d*(9+j*3),opened=d*(58+j*4)*tune.spread;
-      if(tune.connected)held(id,'y',[[0,-198+len],[.25,-198+len],[.7,y-8],[1,y]]);
-      held(id,'rotation',[[0,initial],[.25,initial],[.66,opened*.65],[1,opened]]);
+      if(tune.connected)held(id,'y',tune.stagedBloom?unfold(-198+len,y):[[0,-198+len],[.25,-198+len],[.7,y-8],[1,y]]);
+      held(id,'rotation',tune.stagedBloom?unfold(initial,opened):[[0,initial],[.25,initial],[.66,opened*.65],[1,opened]]);
       const cmds=[['M',0,6],['C',-11,-10,-35*size,-36,-25*size,-len*.65],['C',-20*size,-len*.89,-4,-len*.9,0,-len],['C',7,-len*.85,28*size,-len*.8,30*size,-len*.49],['C',28*size,-len*.18,9,-8,0,6],['Z']];
 
       const closed=[['M',0,6],['C',-10,0,-10,-36,-10,-len*.65],['C',-10,-len,-10,-len,0,-len],['C',10,-len,10,-len,10,-len*.49],['C',10,-len*.18,10,0,0,6],['Z']];
@@ -64,12 +67,12 @@ export function buildArt(tune) {
       path(id+'-pigment',plate,C.wash,null,1,id,{opacity:0});
       if(tune.connected){
         const weights=[];let index=0;
-        closed.forEach((c,ci)=>{for(let k=1;k<c.length;k+=2){const b=id+'-edge-'+index++;bone(b,c[k],c[k+1],id);bind('pull',b,'x',cmds[ci][k]-c[k]);bind('pull',b,'y',cmds[ci][k+1]-c[k+1]);weights.push(one(b));}});
+        closed.forEach((c,ci)=>{for(let k=1;k<c.length;k+=2){const b=id+'-edge-'+index++;bone(b,c[k],c[k+1],id);if(tune.stagedBloom){held(b,'x',unfold(c[k],cmds[ci][k]));held(b,'y',unfold(c[k+1],cmds[ci][k+1]));}else{bind('pull',b,'x',cmds[ci][k]-c[k]);bind('pull',b,'y',cmds[ci][k+1]-c[k+1]);}weights.push(one(b));}});
         nodes.find(n=>n.id===id+'-plate').skin={weights};nodes.find(n=>n.id===id+'-pigment').skin={weights};
       }
       const detail=tune.connected?group(id+'-engraving',0,0,id):id;
-      if(tune.connected)held(detail,'scaleX',[[0,.22],[.35,.36],[1,1]]);
-      held(id+'-pigment','opacity',[[0,0],[.35,.06],[1,tune.pigment]]);
+      if(tune.connected)held(detail,'scaleX',tune.stagedBloom?unfold(.22,1):[[0,.22],[.35,.36],[1,1]]);
+      held(id+'-pigment','opacity',tune.stagedBloom?unfold(0,tune.pigment):[[0,0],[.35,.06],[1,tune.pigment]]);
       line([[0,1],[1,-len*.4],[0,-len*.9]],2,C.ink,detail);
       for(let k=1;k<8;k++){const y=-len*k/9,w=Math.sin(k/9*Math.PI)*21*size;line([[0,y+8],[-w,y-5]],.85,C.ink,detail,.8);line([[1,y],[w,y-14]],1,C.ink,detail,.7);}
       line([[-17*size,-len*.34],[-19*size,-len*.61],[-8,-len*.82]],1.6,C.light,detail);
@@ -98,8 +101,8 @@ export function buildArt(tune) {
   if(tune.connected){bone('crown',365,251);}else{group('crown',365,251);}held('crown','y',[[0,251],[.3,243],[1,207]]);
   for(let j=0;j<5;j++){
     const id='crown-petal-'+j;group(id,0,0,'crown');
-    if(tune.connected){held(id,'scaleX',[[0,tune.expressive?.18:.3],[.4,.45],[1,1]]);held(id,'scaleY',[[0,tune.expressive?.08:.25],[.4,.4],[1,1]]);}
-    held(id,'rotation',[[0,(j-2)*(tune.connected?72:6)],[.4,(j-2)*(tune.connected?42:8)],[1,(j-2)*34*tune.spread]]);
+    if(tune.connected){held(id,'scaleX',tune.stagedBloom?[[0,.18],[.44,.18],[1,1]]:[[0,tune.expressive?.18:.3],[.4,.45],[1,1]]);held(id,'scaleY',tune.stagedBloom?[[0,.08],[.44,.08],[1,1]]:[[0,tune.expressive?.08:.25],[.4,.4],[1,1]]);}
+    held(id,'rotation',tune.stagedBloom?[[0,(j-2)*72],[.44,(j-2)*72],[1,(j-2)*34*tune.spread]]:[[0,(j-2)*(tune.connected?72:6)],[.4,(j-2)*(tune.connected?42:8)],[1,(j-2)*34*tune.spread]]);
     path(id+'-outline',[['M',0,10],['C',-18,-22,-32,-71,-11,-98],['L',0,-119-j*3],['C',30,-79,27,-37,0,10],['Z']],j%2?C.light:C.brass,C.ink,1.8,id);
     line([[0,5],[-5,-56],[0,-110]],1.2,C.ink,id);
     for(let k=0;k<8;k++)line([[-4,-20-k*9],[13,-35-k*7]],.8,C.ink,id,.7);
