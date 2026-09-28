@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; base-uri 'none'; form-action 'none'">
+<title>First Look · A machine invents a flower</title>
+<style>
+:root { color-scheme: light; --paper:#f4efe4; --ink:#293e37; --muted:#657168; --line:#c9cbbb; --accent:#a4422e; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--paper); color:var(--ink); font-family:Georgia,'Times New Roman',serif; }
+main { width:min(1120px, 100% - 64px); margin:36px auto 24px; }
+header { display:flex; justify-content:space-between; align-items:center; border-top:2px solid var(--ink); padding:14px 0 26px; }
+.eyebrow, .edition, .number, .meta, button, .phase, footer { font-family:ui-monospace, 'Courier New', monospace; }
+.eyebrow,.edition { font-size:11px; letter-spacing:.15em; text-transform:uppercase; }
+h1 { font-size:clamp(32px,4.5vw,56px); font-weight:400; letter-spacing:-.045em; line-height:1.05; margin:0 0 12px; }
+.intro { font-size:17px; color:var(--muted); margin:0 0 30px; }
+.choices { display:grid; grid-template-columns:repeat(3,1fr); border:1px solid var(--line); margin-bottom:16px; }
+.choice { appearance:none; border:0; border-right:1px solid var(--line); background:transparent; color:var(--ink); text-align:left; padding:17px 20px; cursor:pointer; }
+.choice:last-child { border-right:0; }
+.choice[aria-pressed="true"] { background:var(--ink); color:var(--paper); }
+.choice .number { display:inline-block; font-size:11px; opacity:.75; margin-bottom:7px; }
+.choice strong { display:block; font:400 23px Georgia,serif; }
+.choice small { display:block; font-size:11px; margin-top:6px; opacity:.85; }
+button:focus-visible { outline:3px solid var(--accent); outline-offset:4px; }
+.choice:hover:not([aria-pressed="true"]) { background:#e9e6d9; }
+.stage { position:relative; border:1px solid var(--line); background:#eee8da; }
+canvas { display:block; width:100%; height:auto; aspect-ratio:960/560; }
+.stage-top { position:absolute; top:19px; left:24px; right:24px; display:flex; justify-content:space-between; pointer-events:none; }
+.meta { font-size:10px; letter-spacing:.13em; text-transform:uppercase; color:#647469; }
+.controls { display:flex; align-items:center; gap:9px; padding:14px 0; border-bottom:1px solid var(--line); }
+.controls button { font-size:12px; background:transparent; border:1px solid #9da99c; border-radius:0; padding:10px 16px; color:var(--ink); cursor:pointer; min-width:100px; min-height:44px; }
+.controls button:hover { background:#e2e4d7; }
+.phase { margin-left:auto; font-size:11px; color:var(--muted); text-align:right; }
+.progress { width:82px; height:3px; background:#d4d7c9; margin-left:8px; overflow:hidden; }
+.progress span { display:block; background:var(--accent); height:100%; transform-origin:left; transform:scaleX(0); }
+.caption { display:flex; justify-content:space-between; gap:32px; padding:19px 0 26px; }
+.caption p { font-size:18px; line-height:1.45; max-width:650px; margin:0; }
+.caption .note { font:11px/1.7 ui-monospace,'Courier New',monospace; color:var(--muted); text-align:right; min-width:160px; }
+footer { display:flex; justify-content:space-between; gap:16px; font-size:10px; letter-spacing:.04em; color:var(--muted); border-top:1px solid var(--line); padding-top:14px; }
+@media(max-width:650px) {
+ main { width:calc(100% - 28px); margin-top:18px; } header { padding-bottom:22px; } .edition { display:none; }
+ .intro { font-size:15px; margin-bottom:22px; } .choice { padding:12px 9px; } .choice strong { font-size:17px; } .choice small { font-size:9px; line-height:1.4; }
+ .stage-top { top:10px; left:12px; right:12px; } .meta { font-size:8px; letter-spacing:.03em; }
+ .controls { flex-wrap:wrap; } .controls button { min-width:86px; padding:10px; } .phase { font-size:9px; } .progress { display:none; }
+ .caption { display:block; padding:16px 0; } .caption p { font-size:16px; } .caption .note { text-align:left; margin-top:12px; }
+ footer { font-size:9px; } }
+</style>
+</head>
+<body>
+<main>
+<header><span class="eyebrow">Dream Foundry / First Look</span><span class="edition">Three studies · No. 001</span></header>
+<h1>A machine invents a flower.</h1>
+<p class="intro">Three small arguments about where invention comes from. Pick one. Let it unfold.</p>
+<nav class="choices" aria-label="Choose a sketch">
+<button class="choice" data-sketch="0" aria-pressed="true"><span class="number">A / PRECISION</span><strong>Clockwork Bloom</strong><small>A flower, worked out.</small></button>
+<button class="choice" data-sketch="1" aria-pressed="false"><span class="number">B / INSTINCT</span><strong>Living Ink</strong><small>A beautiful loss of control.</small></button>
+<button class="choice" data-sketch="2" aria-pressed="false"><span class="number">C / PARADOX</span><strong>Impossible Garden</strong><small>The invention was inside.</small></button>
+</nav>
+<section class="stage" aria-label="Animated drawing">
+<div class="stage-top"><span class="meta" id="plate">FIG. A · THE DRAWING ENGINE</span><span class="meta">9 SECOND LOOP</span></div>
+<canvas id="drawing" width="960" height="560" role="img" aria-label="Clockwork Bloom: a geared drawing arm traces a flower, holds it, then carefully untraces it.">Your browser needs Canvas2D to display these drawings.</canvas>
+</section>
+<div class="controls">
+<button id="pause" type="button" aria-label="Pause animation">Ⅱ Pause</button><button id="restart" type="button">↺ Restart</button>
+<span class="phase" id="phase" role="status">Winding up</span><div class="progress" aria-hidden="true"><span id="progress"></span></div>
+</div>
+<div class="caption"><p id="caption">A patient mechanism draws something it could never calculate the need for.</p><p class="note" id="note">Trace → admire → untrace<br>One continuous line.</p></div>
+<footer><span>AN EXERCISE IN MECHANICAL BOTANY</span><span>Choose A, B or C · Space to pause</span></footer>
+<noscript>Enable JavaScript to play the three sketches. Everything runs in this file.</noscript>
+</main>
+<script>
+'use strict';
+const canvas = document.getElementById('drawing');
+const ctx = canvas.getContext('2d');
+const TAU = Math.PI * 2;
+const ink = '#34483e', faint = '#b7bdae', paper = '#eee8da', red = '#b95438';
+const clamp = v => Math.max(0, Math.min(1, v));
+const ease = v => { v = clamp(v); return v * v * (3 - 2 * v); };
+const ramp = (t, a, b) => ease((t - a) / (b - a));
+const lerp = (a,b,t) => a + (b-a)*t;
+function line(points, color=ink, width=1.6) {
+  if (!points.length) return;
+  ctx.beginPath(); ctx.moveTo(...points[0]);
+  for (let i=1;i<points.length;i++) ctx.lineTo(...points[i]);
+  ctx.strokeStyle=color; ctx.lineWidth=width; ctx.stroke();
+}
+function circle(x,y,r,color=ink,fill=null,width=1.5) {
+  ctx.beginPath(); ctx.arc(x,y,Math.max(0,r),0,TAU);
+  if (fill) { ctx.fillStyle=fill; ctx.fill(); }
+  ctx.strokeStyle=color; ctx.lineWidth=width; ctx.stroke();
+}
+function label(text,x,y,color='#758173') {
+  ctx.fillStyle=color; ctx.font='10px monospace'; ctx.fillText(text,x,y);
+}
+function gear(x,y,r,angle,teeth=18) {
+  ctx.save(); ctx.translate(x,y); ctx.rotate(angle);
+  const pts=[];
+  for(let i=0;i<=teeth*4;i++) { const a=i/(teeth*4)*TAU, d=r*(i%4<2?1:.89); pts.push([Math.cos(a)*d,Math.sin(a)*d]); }
+  line(pts,ink,1.7); circle(0,0,r*.7,faint); circle(0,0,7,ink,paper);
+  for(let i=0;i<6;i++) { const a=i/6*TAU; line([[Math.cos(a)*14,Math.sin(a)*14],[Math.cos(a)*r*.68,Math.sin(a)*r*.68]],ink,1); }
+  ctx.restore();
+}
+function ground(x1,x2,y) {
+  line([[x1,y],[x2,y]],faint,1);
+  for(let x=x1+8;x<x2;x+=12) line([[x,y],[x-6,y+7]],faint,.7);
+}
+function leaf(x,y,angle,size,color,open=1) {
+  ctx.save(); ctx.translate(x,y); ctx.rotate(angle); ctx.scale(open,open);
+  ctx.beginPath(); ctx.moveTo(0,0); ctx.bezierCurveTo(size*.35,-size*.48,size*.9,-size*.45,size,0);
+  ctx.bezierCurveTo(size*.65,size*.3,size*.3,size*.35,0,0); ctx.fillStyle=color; ctx.fill();
+  line([[0,0],[size*.82,-size*.03]],paper,.7); ctx.restore();
+}
+function background() {
+  ctx.fillStyle=paper; ctx.fillRect(0,0,960,560); ctx.lineCap='round'; ctx.lineJoin='round';
+  // A fixed, small stipple field gives the drawings paper rather than a flat screen.
+  ctx.fillStyle='#ddd8cb';
+  for(let i=0;i<170;i++) ctx.fillRect((i*173+37)%954,(i*97+43)%552,1,1);
+}
+
+// A: a two-link pen follows a single closed polar curve. Retraction retraces it.
+function clockwork(t) {
+  const grow=ramp(t,.6,5.1)*(1-ramp(t,6.6,8.6));
+  const a=grow*TAU, cx=638, cy=226;
+  const flowerPoint=u=>{ const r=81+40*Math.cos(5*u); return [cx+Math.sin(u)*r,cy-Math.cos(u)*r]; };
+  const tip=flowerPoint(a);
+  ground(133,789,454);
+  ctx.setLineDash([3,7]); circle(cx,cy,126,faint,null,.8); line([[cx,85],[cx,438]],faint,.8); ctx.setLineDash([]);
+  label('01 / TURN',149,495); label('02 / TRANSLATE',387,495); label('03 / IMAGINE',663,495);
+  line([[177,449],[197,344],[277,344],[305,449],[177,449]],ink,2);
+  gear(236,348,69,a,20); gear(339,367,35,-a*2,10);
+  line([[319,448],[339,367],[365,448]],ink,2);
+  const base=[236+30*Math.cos(a),348+30*Math.sin(a)];
+  const dx=tip[0]-base[0],dy=tip[1]-base[1],d=Math.hypot(dx,dy),l1=310,l2=254;
+  const theta=Math.atan2(dy,dx)+Math.acos(Math.max(-1,Math.min(1,(d*d+l1*l1-l2*l2)/(2*d*l1))));
+  const elbow=[base[0]+l1*Math.cos(theta),base[1]+l1*Math.sin(theta)];
+  line([base,elbow,tip],ink,9); line([base,elbow,tip],paper,5.5);
+  [base,elbow].forEach(p=>circle(...p,5,ink,paper));
+  // The stem is pulled from the same drawing, then recedes before the next turn.
+  const stem=ramp(grow,.15,.8);
+  line([[cx,cy+8],[cx,cy+8+196*stem]],ink,1.8);
+  if(stem>0) { leaf(cx,cy+150,-2.5,63,ink,stem); leaf(cx,cy+117,-.7,53,ink,stem); }
+  const pts=[flowerPoint(0)], n=Math.floor(grow*400);
+  for(let i=1;i<=n;i++) pts.push(flowerPoint(i/400*TAU));
+  pts.push(tip); line(pts,red,2.6);
+  if(grow>.93) { ctx.globalAlpha=ramp(grow,.93,1); circle(cx,cy,17,red,paper); circle(cx,cy,7,red); ctx.globalAlpha=1; }
+  circle(...tip,4,red,paper,2); circle(236,348,4,ink,paper);
+  label('a little more than the sum of its parts',137,77);
+  return t<.6?'Winding up':t<5.1?'Tracing a possibility':t<6.6?'A flower, precisely':t<8.6?'Following the line home':'Ready for another thought';
+}
+
+// B: a press leaks a branching brush stroke. Ink returns as a drop to its well.
+function living(t) {
+  const absorb=1-ramp(t,7,8.25), growth=ramp(t,.9,4.7), g=growth*absorb;
+  const root=u=>[338+278*u+24*Math.sin(u*5),424-278*u-17*Math.sin(u*8)];
+  const sway=Math.sin(t*TAU/9)*g*4;
+  ground(160,765,463);
+  label('a small, unapproved deviation',137,77);
+  // Press, roller, ink well and a page that fails to contain the drawing.
+  line([[198,459],[198,288],[420,288],[420,459]],ink,3);
+  line([[183,291],[435,291],[426,276],[192,276],[183,291]],ink,2);
+  for(let x=212;x<418;x+=18) line([[x,281],[x+7,288]],faint,1);
+  const piston=15*Math.sin(ramp(t,0,1.5)*Math.PI);
+  line([[240,291],[240,353+piston],[377,353+piston],[377,291]],ink,2);
+  line([[226,355+piston],[390,355+piston],[390,372+piston],[226,372+piston],[226,355+piston]],ink,2);
+  gear(192,352,33,ramp(t,0,2)*(1-ramp(t,7,8.85))*Math.PI,12);
+  line([[219,427],[427,427],[458,450],[229,450],[219,427]],faint,1.5);
+  circle(300,419,19,ink,paper); ctx.fillStyle=ink; ctx.beginPath(); ctx.ellipse(300,420,13,5,0,0,TAU); ctx.fill();
+  label('INK / DO NOT OVERFILL',188,495);
+  if(g>0) {
+    ctx.save(); ctx.translate(sway,0);
+    const pts=[]; for(let i=0;i<=90;i++) { const u=i/90*g; pts.push(root(u)); }
+    line([[300,420],[320,430],root(0)],ink,4*absorb);
+    line(pts,ink,4.5);
+    // Different branch lengths, directions and growth delays keep this asymmetrical.
+    for(let k=0;k<9;k++) {
+      const u=.15+k*.085, start=root(u), side=k%2?1:-1;
+      const b=ramp(g,u,u+.24), length=58+(k*29)%64;
+      const branch=[];
+      for(let j=0;j<=26;j++){const q=j/26*b;branch.push([start[0]+side*length*q,start[1]-length*.54*q-20*Math.sin(q*2)]);}
+      line(branch,ink,2.1);
+      if(b>0){const end=branch[branch.length-1];leaf(...end,side>0?-.55:-2.75,38+k%3*12,k%3?'#3e5945':'#768361',b);}
+      if(b>.5) leaf(start[0]+side*length*.48,start[1]-length*.43,side>0?-1.8:-1.2,27,ink,ramp(b,.5,1));
+    }
+    const end=root(1), bloom=ramp(g,.74,1);
+    ctx.save(); ctx.translate(...end); ctx.rotate(-.18+Math.sin(t*1.4)*.03*bloom);
+    for(let k=0;k<9;k++) {
+      const a=k/9*TAU, size=(k%2?79:91)*bloom;
+      ctx.save(); ctx.rotate(a);
+      ctx.beginPath(); ctx.moveTo(0,0); ctx.bezierCurveTo(-38*bloom,-size*.5,-29*bloom,-size*1.15,0,-size);
+      ctx.bezierCurveTo(34*bloom,-size*.89,36*bloom,-size*.24,0,0);
+      ctx.fillStyle=k%3===0?'#bc613f':k%3===1?'#d08a59':'#a94934'; ctx.fill();
+      line([[0,-7*bloom],[2,-size*.79]],'#eee0bd',.9); ctx.restore();
+    }
+    circle(0,0,17*bloom,ink,ink);
+    for(let k=0;k<14;k++){const a=k*2.4,r=Math.sqrt(k)*3*bloom;circle(Math.cos(a)*r,Math.sin(a)*r,1,'#e8c185','#e8c185',.5);}
+    ctx.restore();
+    // Short escape strokes cross the press and curl back toward its feet.
+    for(let k=0;k<4;k++) { const b=ramp(g,.4+k*.06,.7+k*.06), p=[];for(let i=0;i<=30;i++){const u=i/30*b;p.push([347-152*u+(k*13)*Math.sin(u*4),417-100*Math.sin(u*Math.PI)+k*7]);}line(p,'#526a4c',1.5); }
+    ctx.restore();
+  }
+  // One last drop reconnects the emptied vine to the press's ink reservoir.
+  if(t>=8.1) { const q=ramp(t,8.1,8.85); circle(300,lerp(362,420,q),4*Math.sin(Math.PI*q),ink,ink); }
+  label('the margin is a suggestion',548,495);
+  return t<.9?'One drop escapes':t<4.7?'The ink has other plans':t<7?'The machine disappears beneath it':t<8.25?'Drinking itself back in':'A drop returns to the well';
+}
+
+// C: the same eight segmented panels become eight petals; no flower overlay.
+function impossible(t) {
+  const unfold=ramp(t,1,4.6)*(1-ramp(t,6.4,8.65));
+  const twist=ramp(t,1,4.6)*Math.PI*.25*(1-ramp(t,6.4,8.65));
+  const cx=480,cy=274;
+  label('nothing added. everything reconsidered.',137,77);
+  ctx.setLineDash([2,8]); circle(cx,cy,202,faint,null,.8);ctx.setLineDash([]);
+  ground(286,674,466);
+  // The stand's rails uncurl into a stem and two leaves.
+  line([[cx,cy+45],[cx,459]],ink,2);
+  const spread=72*unfold;
+  line([[cx-25*(1-unfold),450],[cx-25*(1-unfold)-spread,376-spread*.3],[cx,407]],ink,1.8);
+  line([[cx+25*(1-unfold),450],[cx+25*(1-unfold)+spread,351-spread*.3],[cx,389]],ink,1.8);
+  leaf(cx,405,-2.55,78,ink,unfold);leaf(cx,382,-.63,68,ink,unfold);
+  // Each rigid-looking wedge bends outward through the center. The inset hatching
+  // travels with the surface so the machine remains recognizable as the blossom.
+  for(let k=0;k<8;k++) {
+    ctx.save();ctx.translate(cx,cy);ctx.rotate(k/8*TAU+twist);
+    const near=lerp(38,13,unfold),far=lerp(111,171,unfold),width=lerp(41,56,unfold);
+    const shoulder=lerp(41,9,unfold);
+    const inward=lerp(82,-25,unfold);
+    ctx.beginPath();ctx.moveTo(-near*.37,-near);
+    ctx.bezierCurveTo(-lerp(24,width,unfold),-inward,-width,-far,-shoulder,-far);
+    ctx.bezierCurveTo(-shoulder*.3,-far-8*unfold,shoulder*.3,-far-8*unfold,shoulder,-far);
+    ctx.bezierCurveTo(width,-far,lerp(24,width,unfold),-inward,near*.37,-near);ctx.closePath();
+    ctx.fillStyle=k%2?'#d9bc77':'#c99b5e';ctx.fill();ctx.strokeStyle=ink;ctx.lineWidth=1.7;ctx.stroke();
+    for(let h=0;h<5;h++) { const y=lerp(near+12,far-14,h/5);const w=8+Math.sin(h/5*Math.PI)*12;line([[-w,-y],[w,-y-4*unfold]],'#8c754d',.7); }
+    line([[0,-near],[0,-far+10]],'#f5dfac',1.4);
+    circle(0,-near,3,ink,paper,1.2); ctx.restore();
+  }
+  // The aperture changes from an angular cam to the seed head.
+  gear(cx,cy,lerp(38,29,unfold),-twist*2,12);
+  circle(cx,cy,lerp(15,20,unfold),ink,unfold>.5?'#544d32':paper);
+  for(let i=0;i<19;i++){const a=i*2.4,r=Math.sqrt(i)*3.6*unfold;circle(cx+Math.cos(a)*r,cy+Math.sin(a)*r,1*unfold,'#e4c47d','#e4c47d',.5);}
+  label('CASE = PETALS',151,238);line([[246,235],[292,235],[322,260]],faint,.8);
+  label('CAM = SEEDS',695,315);line([[635,290],[678,312]],faint,.8);
+  label('a machine with no outside',365,507);
+  return t<1?'A closed proposition':t<4.6?'Turning the inside out':t<6.4?'It was a flower all along':t<8.65?'Folding the answer away':'A closed proposition';
+}
+
+// A single clock and one canvas: the unselected sketches do no drawing work.
+const sketches=[
+  {draw:clockwork,plate:'FIG. A · THE DRAWING ENGINE',caption:'A patient mechanism draws something it could never calculate the need for.',note:'Trace → admire → untrace<br>One continuous line.',alt:'Clockwork Bloom: a geared drawing arm traces a flower, holds it, then carefully untraces it.'},
+  {draw:living,plate:'FIG. B · THE DISOBEDIENT PRESS',caption:'One drop escapes. The drawing takes root, climbs the press, and forgets who was in charge.',note:'Leak → overgrow → return<br>The ink remembers its well.',alt:'Living Ink: a printing press leaks a branching vine and rust-orange flower that grows across the mechanism, then returns to its ink well.'},
+  {draw:impossible,plate:'FIG. C · THE FOLDING PARADOX',caption:'No flower comes out of this machine. Its casing, hinges and cam were the flower all along.',note:'Unfold → recognize → refold<br>Nothing added. Nothing lost.',alt:'Impossible Garden: eight hatched machine panels turn outward into petals; the cam becomes seeds and the support becomes a stem, then the flower folds shut.'}
+];
+const pauseButton=document.getElementById('pause'), phase=document.getElementById('phase');
+const progress=document.getElementById('progress');
+const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
+let selected=0, paused=reducedMotion.matches, elapsed=0, last=null, lastDraw=null, raf=0;
+function render() {
+  background();const words=sketches[selected].draw((elapsed%9000)/1000);
+  const status=paused?'Paused · '+words:words;
+  if(phase.textContent!==status) phase.textContent=status;
+  progress.style.transform=`scaleX(${elapsed%9000/9000})`;
+}
+function frame(now) {
+  raf=0;if(paused||document.hidden)return;
+  if(last!==null)elapsed+=now-last;
+  last=now;
+  if(lastDraw===null||now-lastDraw>=1000/30) {
+    const remainder=lastDraw===null?0:(now-lastDraw)%(1000/30);
+    render();lastDraw=now-remainder;
+  }
+  raf=requestAnimationFrame(frame);
+}
+function syncPlayback() {
+  cancelAnimationFrame(raf);raf=0;last=null;lastDraw=null;
+  pauseButton.textContent=paused?'▶ Play':'Ⅱ Pause';
+  pauseButton.setAttribute('aria-label',paused?'Play animation':'Pause animation');
+  if(!document.hidden) { render();if(!paused)raf=requestAnimationFrame(frame); }
+}
+function selectSketch(index) {
+  selected=index;elapsed=0;
+  document.querySelectorAll('[data-sketch]').forEach((button,i)=>button.setAttribute('aria-pressed',String(i===index)));
+  document.getElementById('plate').textContent=sketches[index].plate;
+  document.getElementById('caption').textContent=sketches[index].caption;
+  document.getElementById('note').innerHTML=sketches[index].note;
+  canvas.setAttribute('aria-label',sketches[index].alt);
+  syncPlayback();
+}
+document.querySelectorAll('[data-sketch]').forEach(button=>button.addEventListener('click',()=>selectSketch(Number(button.dataset.sketch))));
+pauseButton.addEventListener('click',()=>{paused=!paused;syncPlayback();});
+document.getElementById('restart').addEventListener('click',()=>{elapsed=0;syncPlayback();});
+document.addEventListener('visibilitychange',syncPlayback);
+reducedMotion.addEventListener('change',event=>{if(event.matches){paused=true;syncPlayback();}});
+document.addEventListener('keydown',event=>{
+  if(event.altKey||event.ctrlKey||event.metaKey||event.repeat)return;
+  if(event.code==='Space'&&event.target.tagName!=='BUTTON'){event.preventDefault();paused=!paused;syncPlayback();}
+  const index=['a','b','c'].indexOf(event.key.toLowerCase());if(index!==-1)selectSketch(index);
+});
+syncPlayback();
+</script>
+</body>
+</html>
