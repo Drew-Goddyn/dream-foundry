@@ -2,7 +2,9 @@
 
 An ink creature pulls a printing press into a botanical impression. Drag the
 vermilion drop, reverse direction, or release midway. Arrow keys on the drop and
-the Pull slider provide keyboard access; Escape releases and R resets.
+the Pull slider provide keyboard access; Escape releases and R resets. Reduced
+motion settles inputs immediately and replaces the animated demonstration with
+a static unfurled pose.
 
 ## Run from Dream Foundry
 

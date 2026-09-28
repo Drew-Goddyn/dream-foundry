@@ -42,9 +42,10 @@ try {
   });
   document.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='r'&&!e.metaKey&&!e.ctrlKey&&!e.altKey){e.preventDefault();reset();}});
   $('#reset').onclick=reset;$('#release').onclick=release;
-  $('#reach').oninput=e=>{const t=Number(e.target.value)/100;send(request(805+235*t,272-107*t));};
-  $('#replay').onclick=()=>{reset();replaying={records:makeReplay(),index:0};};
-  reduced.onchange=()=>{if(reduced.checked){replaying=null;time+=.7;draw();}};
+  $('#reach').oninput=e=>{const t=Number(e.target.value)/100;send({...request(805+235*t,272-107*t),pull:t});};
+  $('#replay').onclick=()=>{if(reduced.checked){send(request(1040,165));}else{reset();replaying={records:makeReplay(),index:0};}};
+  function motionPreference(){ $('#replay').textContent=reduced.checked?'Show unfurled pose':'Watch the gesture';if(reduced.checked){replaying=null;time+=.7;draw();}}
+  reduced.onchange=motionPreference;motionPreference();
   window.inkborn={get pose(){return instance.evaluate(time)},get recording(){return {records:structuredClone(records),time}},get frameCount(){return frameCount},get renderer(){return renderer.backend},reset,release,
     seek(recordsToApply,t){held=null;replaying=null;instance.replay(recordsToApply,t);time=t;records=recordsToApply.filter(r=>r.time<=t);requested=instance.getInputs();last=performance.now();draw();},
     stop(){cancelAnimationFrame(raf);},start(){last=performance.now();raf=requestAnimationFrame(tick);}};

@@ -37,12 +37,14 @@ export async function verify({Motor,doc,out,motor,chrome,serve}) {
     a.replay(r,3.6);assert.deepEqual(saved,copy);assert.deepEqual(b.evaluate(0),copy);a.reset();assert.deepEqual(a.evaluate(0),copy);
   });
   const {chromium}=await import(pathToFileURL(path.join(motor,'node_modules/playwright/index.mjs')));
-  const server=serve(path.join(out,'play'));await new Promise(r=>server.listen(0,'127.0.0.1',r));
-  const browser=await chromium.launch({executablePath:chrome,headless:true});
-  const context=await browser.newContext({viewport:{width:1320,height:1060},deviceScaleFactor:1});
-  const page=await context.newPage(),errors=[],external=[];
-  page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(!r.url().startsWith('http://127.0.0.1:'))external.push(r.url());});
+  const server=serve(path.join(out,'play')),errors=[],external=[];
+  let browser,page;
   try {
+    await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(0,'127.0.0.1',resolve);});
+    browser=await chromium.launch({executablePath:chrome,headless:true});
+    const context=await browser.newContext({viewport:{width:1320,height:1060},deviceScaleFactor:1});
+    page=await context.newPage();
+    page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(!r.url().startsWith('http://127.0.0.1:'))external.push(r.url());});
     await page.goto(`http://127.0.0.1:${server.address().port}/`);await page.waitForFunction(()=>window.inkborn?.frameCount>2);
     assert.equal(await page.evaluate(()=>window.inkborn.renderer),'rive');
     const drop=page.getByRole('button',{name:'Vermilion drop',exact:true});
@@ -71,14 +73,24 @@ export async function verify({Motor,doc,out,motor,chrome,serve}) {
     assert.deepEqual(paired.replayed,paired.pose);
     await page.mouse.up();await page.waitForTimeout(800);close(await page.evaluate(()=>window.inkborn.pose.inputs.effective.pull),0);
     results.push({name:'actual far drag, reversal, interruption, captured release and exact replay of browser requests',result:'PASS'});
+    const slider=page.getByRole('slider',{name:'Pull',exact:true});
+    await slider.focus();await page.keyboard.press('End');await page.waitForTimeout(850);
+    close(await page.evaluate(()=>window.inkborn.pose.inputs.effective.pull),1);
+    await page.keyboard.press('Home');await page.waitForTimeout(850);
+    close(await page.evaluate(()=>window.inkborn.pose.inputs.effective.pull),0);assert.equal(await slider.inputValue(),'0');
+    results.push({name:'native Pull slider reaches full pull and exact rest with End and Home',result:'PASS'});
     // Scripted lifecycle events supplement the real pointer/keyboard checks.
     await drop.focus();await page.keyboard.press('ArrowRight');await page.waitForTimeout(120);
     await page.evaluate(()=>window.dispatchEvent(new Event('blur')));await page.waitForTimeout(800);
     close(await page.evaluate(()=>window.inkborn.pose.inputs.effective.pull),0);
     await page.getByLabel('Reduced motion',{exact:true}).check();await drop.focus();await page.keyboard.press('ArrowRight');
     const reduced=await page.evaluate(()=>window.inkborn.pose.inputs);close(reduced.effective.pull,reduced.requested.pull);
+    await page.getByRole('button',{name:'Show unfurled pose',exact:true}).click();
+    const still=drawing(await page.evaluate(()=>window.inkborn.pose));await page.waitForTimeout(300);
+    assert.deepEqual(drawing(await page.evaluate(()=>window.inkborn.pose)),still);
+    close(await page.evaluate(()=>window.inkborn.pose.inputs.effective.pull),1);
     await page.keyboard.press('r');close(await page.evaluate(()=>window.inkborn.pose.inputs.effective.pull),0);
-    results.push({name:'scripted blur interruption, reduced-motion settling and keyboard reset',result:'PASS'});
+    results.push({name:'scripted blur interruption, reduced-motion static preview and direct input settling, and keyboard reset',result:'PASS'});
     await page.getByLabel('Reduced motion',{exact:true}).uncheck();
     const captures=[];
     for(const [label,width,height] of [['desktop',1320,1060],['mobile',390,844]]){
@@ -93,8 +105,8 @@ export async function verify({Motor,doc,out,motor,chrome,serve}) {
     results.push({name:'Rive startup without page errors or external requests',result:'PASS'});
     await fs.writeFile(path.join(out,'browser-recording.json'),JSON.stringify(paired,null,2));
   } catch(error) {
-    await fs.writeFile(path.join(out,'browser-failure.json'),JSON.stringify({message:error.message,errors,external,state:await page.evaluate(()=>({hidden:document.hidden,frames:window.inkborn?.frameCount,time:window.inkborn?.recording.time,status:document.querySelector('#state')?.textContent})).catch(()=>null)},null,2));
-    await page.screenshot({path:path.join(out,'browser-failure.png'),fullPage:true}).catch(()=>{});throw error;
-  } finally {await context.close();await browser.close();await new Promise(r=>server.close(r));}
+    await fs.writeFile(path.join(out,'browser-failure.json'),JSON.stringify({message:error.message,errors,external,state:page?await page.evaluate(()=>({hidden:document.hidden,frames:window.inkborn?.frameCount,time:window.inkborn?.recording.time,status:document.querySelector('#state')?.textContent})).catch(()=>null):null},null,2));
+    if(page)await page.screenshot({path:path.join(out,'browser-failure.png'),fullPage:true}).catch(()=>{});throw error;
+  } finally {await browser?.close().catch(()=>{});await new Promise(r=>server.close(r));}
   await fs.writeFile(path.join(out,'checks.json'),JSON.stringify({kind:'local author checks',results,limits:['sampled frames and browser interaction checks; no independent visual verdict','scripted blur is not an OS focus-change test','no screen-reader or touch-device qualification']},null,2)+'\n');
 }
