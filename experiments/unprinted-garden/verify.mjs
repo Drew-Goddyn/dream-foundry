@@ -4,7 +4,9 @@ import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {stateAt,guide,checkLog} from './state.mjs';
 import {Performance} from './rig.mjs';
+import {verifyPointer} from './verify-pointer.mjs';
 export async function verify({page,out,Motor,doc}){
+ await verifyPointer({page,out});
  const checks=[],pass=(name,detail)=>checks.push({name,status:'pass',detail});
  const log=guide();checkLog(log);assert.deepEqual(stateAt(log,500).created,stateAt(log,48).created);assert.equal(stateAt([...log,{t:501,type:'reset'}],502).created,null);pass('Creation survives release and time; reset clears it');
  assert.equal(stateAt(log,24.8).age,stateAt(log,23).age);const warm=new Performance(Motor,doc);
