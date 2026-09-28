@@ -1,0 +1,22 @@
+{
+  "initial": {
+    "spread": 0.45,
+    "headLift": 0.55,
+    "pigment": 0.38
+  },
+  "candidate": {
+    "spread": 1.05,
+    "headLift": 1.15,
+    "pigment": 0.84,
+    "connected": true,
+    "expressive": true,
+    "stagedBloom": true,
+    "noticeBloom": true
+  },
+  "bookplate": {
+    "spread": 1.05,
+    "headLift": 1.15,
+    "pigment": 0.84,
+    "connected": true
+  }
+}
