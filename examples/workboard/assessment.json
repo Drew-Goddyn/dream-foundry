@@ -1,0 +1,14 @@
+{
+  "id": "REPLACE-ASSESSMENT-ID",
+  "submission": "REPLACE-SUBMISSION-ID",
+  "submission_digest": "REPLACE-DIGEST-FROM-STATUS",
+  "reviewer": "DF-VERIFY-01",
+  "session": "REPLACE-WITH-ACTUAL-FRESH-SESSION-ID",
+  "identity_kind": "real",
+  "source_revision": "e37d64087d556f2488a8e214fd9d98fb42bf9b12",
+  "criteria_revision": "1",
+  "criteria": {
+    "finding": {"result": "BLOCKED", "observation": "Not reviewed yet. Replace after direct inspection.", "evidence": []},
+    "scope": {"result": "BLOCKED", "observation": "Not reviewed yet. Replace after direct inspection.", "evidence": []}
+  }
+}

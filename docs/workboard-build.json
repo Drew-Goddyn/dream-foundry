@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "role": "DF-BUILD-01",
+  "work_order": "https://github.com/Drew-Goddyn/dream-foundry/issues/6",
+  "starting_branch": "docs/phase-0-foundation",
+  "starting_revision": "e37d64087d556f2488a8e214fd9d98fb42bf9b12",
+  "starting_revision_verification": "GitHub connector branch read matched the local Git object",
+  "builder_branch": "build/local-workboard-2rllM6",
+  "local_environment": {
+    "python": "3.14.2",
+    "sqlite": "3.53.2",
+    "reasoning_configuration": "unknown",
+    "model_usage_and_cost": "unknown"
+  },
+  "real_report": {
+    "trial": "DOC-CHECKS-T2",
+    "assignment": "DF-BUILD-01-DOCS-2",
+    "submission": "DOC-CHECKS-S2",
+    "source_revision": "e37d64087d556f2488a8e214fd9d98fb42bf9b12",
+    "criteria_revision": "1",
+    "package_digest": "969b733cb2476bd4c0fe9be0c79ac87f974544b28032f771a153399cb96c18c2",
+    "report_sha256": "868dc3b2a44f05c79e09bec55e20c5eb92f9b0205a0ab8b8ef152a9c02b9e24f",
+    "identity_kind": "real",
+    "session_handle": "Recorded locally; omitted from public record",
+    "supersedes": "DOC-CHECKS-S1; citation range correction; original retained"
+  },
+  "assessment": {
+    "id": "BUILDER-SMOKE-SIMULATED-2",
+    "identity_kind": "simulated",
+    "independent_review": "pending",
+    "human_acceptance": "not-recorded"
+  },
+  "verification": {
+    "scope": "Local self-tests; no independently accepted or CI result claimed",
+    "commands": [
+      "python3 -m unittest discover -s tests -p test_workboard.py -v",
+      "python3 tools/check_docs.py",
+      "python3 -m unittest discover -s tests -v"
+    ],
+    "results": {
+      "workboard_smoke": "6 tests passed before added missing-input/deadline checks; these also passed in full discovery",
+      "documentation_structure": "PASS",
+      "full_discovery": "14 tests passed in 5.358s, including six workboard tests and eight documentation fixtures",
+      "state_inside_source_control": "Rejected with exit 1 before writing state"
+    }
+  }
+}
