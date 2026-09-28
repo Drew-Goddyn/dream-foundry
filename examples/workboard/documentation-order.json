@@ -1,0 +1,13 @@
+{
+  "id": "WO-DOC-CHECKS-01",
+  "revision": "1",
+  "objective": "Identify one evidence-backed documentation improvement for handing off a build from the unmerged foundation.",
+  "scope": "Read the fixed foundation documentation and workflow. Produce a short report only; do not change repository settings or dispatch CI.",
+  "stopping_point": "One fixed report with source evidence and a bounded recommendation, awaiting fresh review.",
+  "source_revision": "e37d64087d556f2488a8e214fd9d98fb42bf9b12",
+  "criteria_revision": "1",
+  "criteria": [
+    {"id": "finding", "text": "Identify a concrete contradiction or useful next improvement supported by the fixed source.", "required": true},
+    {"id": "scope", "text": "Recommend one bounded next change and state what was not verified or authorized.", "required": true}
+  ]
+}

@@ -1,31 +1,23 @@
 # Dream Foundry
 
-A human-directed Codex swarm for research, experimentation, and eventually executable art.
+A human-directed creative swarm: explore different ideas, make executable work, compare real results, and retain useful discoveries with less human coordination.
 
-## Start here
+## Next result: First Look
 
-Read [current status](docs/status.md) for the active assignments, exact source identities, and what is observed versus reported. Agents begin with [AGENTS.md](AGENTS.md). Old launch briefs are historical unless the current assignment selects them.
+[Work Order #14](https://github.com/Drew-Goddyn/dream-foundry/issues/14): **a drawn machine invents a flower**, interpreted three different ways on one offline, playable page. The next human feedback should choose a creative direction, not approve more infrastructure.
 
-The first local workboard has a human-relayed independent PASS. Two human-launched workers now report sealed outputs on one shared board: an operational runbook and a CPU-only anidoodle integration brief. Their reports await Assessment. The implementation is still local, not present on this documentation branch.
+The sketches are not implemented yet. Launch **DF-MAKE-01** with the first-look assignment from an isolated `make/first-look` worktree based on this integrated branch. One maker produces three creative hypotheses; this is not three autonomous agents. A fresh reviewer checks the fixed experience afterward.
 
-The prepared next step is [wave two](docs/agents/wave-02.md): one fresh reviewer assesses both reports while one isolated builder makes a no-render source inspector and two small workboard usability fixes. No mandatory framework study, repeated baseline review, or long experiment precedes that work. Preparing briefs does not launch sessions.
+## What already works
 
-## Working loop
+This branch combines the published, reviewed workboard and text inspector with current operating instructions. Runtime, tests, examples and third-party notices retain their published blob identities. See [status](docs/status.md) for exact provenance and pending work.
 
-Build one useful slice, exercise its real entry point, independently review changed implementation, and use the result. Research can inform an isolated experiment before it is accepted, but contrary evidence must be reconciled before claiming a verified outcome.
+Use [the workboard](docs/workboard.md) to coordinate local sessions and [the source inspector](docs/source-inspector.md) for scoped text checks. These tools do not launch agents or certify artwork. Ordinary offline browser sketches are now the assigned creative workload; heavyweight rendering and model-generation jobs are not.
 
-GitHub records intent and proposed changes. The reviewed local workboard coordinates manually launched sessions through explicit task claims and sealed outputs. Automatic agent launching, unattended recovery, and remote synchronization are not implemented or certified.
+## Working rule
 
-Terms live in [CONTEXT.md](CONTEXT.md); authority in [operating policy](docs/operating-policy.md); assignment and evidence behavior in [coordination](docs/coordination.md). [The precursor suite](docs/experiments/precursor-suite.md) separates current smoke checks from deferred resilience work.
+Deliver something judgeable. Add infrastructure only to remove an observed blocker for a named deliverable or repeated human burden. Keep review evidence available, but show the artifact first. Existing tools are frozen unless a concrete defect blocks the current outcome.
 
-## Resources and publication
+Agents read [AGENTS.md](AGENTS.md), [current status](docs/status.md) and their assignment. Permissions live in [operating policy](docs/operating-policy.md); terminology in [CONTEXT.md](CONTEXT.md). Historical wave briefs are not current dispatch instructions.
 
-Use installed tools and lightweight CPU/source inspection. GPU work, model weights, generated media, large datasets, paid provisioning, and recursive worker launching are outside current assignments. Human-launched Codex sessions still consume the owner's model allowance. Use the highest supported reasoning on the human-selected model; a prompt cannot configure it.
-
-[GitHub operations](docs/github.md) records plan guidance and settings not yet applied. Main is not automatically merged. Keep boards, raw transcripts, credentials, and machine-specific details local because this repository is public. A source-only Git bundle is the pending transport for implementation inspection here; a path in a report is not an uploaded file.
-
-## Checks and references
-
-This documentation branch uses `python3 tools/check_docs.py` and `python3 -m unittest discover -s tests` with Python 3.10+. Documentation CI does not certify the unpublished local workboard or future inspector. See [status](docs/status.md) for scoped evidence.
-
-Useful on demand: [architecture](docs/architecture.md), [report template](docs/templates/research-report.md), [assessment template](docs/templates/assessment.md), [earlier wave](docs/agents/wave-01.md), and [historical self-checks](docs/reviews/foundation-self-check.md). Third-party code reuse requires checking and retaining its actual license/provenance; no project license has been selected.
+Checks: `python3 tools/check_docs.py` and `python3 -m unittest discover -s tests`. Their success is not visual review. GitHub publication, human acceptance, merging and local workboard upgrades remain separate. Keep private runtime data out of this public repository.
