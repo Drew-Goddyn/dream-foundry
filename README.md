@@ -4,15 +4,11 @@ A human-directed Codex swarm for research, experimentation, and eventually execu
 
 **Now: build a useful local workboard, then improve it while using it.** The human requested fast, low-resource iteration rather than a long experiment or planning program. One builder makes the first working slice; one fresh reviewer checks it. Research happens only where it unblocks that slice.
 
-The repository currently contains instructions, planning, and passing historical documentation checks, not an implemented workboard or running swarm. See [status](docs/status.md) for exact evidence and [the build brief](docs/agents/launch.md) for the next action.
+The repository now includes a supervised Python/SQLite workboard. Use the [local walkthrough](docs/workboard.md) to enqueue, claim, submit, assess, inspect, and cancel work. Fresh independent review and human acceptance are pending; see [status](docs/status.md).
 
 ## Start
 
-Launch one local Codex session named **DF-BUILD-01** with the complete message in [docs/agents/launch.md](docs/agents/launch.md). Work from `docs/phase-0-foundation` while the foundation PR is unmerged, in a separate builder branch/worktree. There is no prerequisite scout session, framework survey, or full simulator.
-
-The first slice is a local CLI that lets human-launched agents take a research Work Order, claim it without a collision, submit a fixed report, record a separate review, and inspect durable status. Use it on one real precursor task. This is a supervised prototype, not unattended execution or automatic agent spawning.
-
-After a fixed candidate exists, launch **DF-VERIFY-01** using [the reviewer brief](docs/agents/reviewer.md). Review the working result, not another speculative architecture proposal.
+Use a fixed source checkout and one explicit state root shared by authorized sessions. Follow the [workboard walkthrough](docs/workboard.md), or launch **DF-VERIFY-01** with the fixed candidate and [complete review packet](docs/workboard-review.md). The [original build brief](docs/agents/launch.md) records the authorized scope. The CLI coordinates human-launched sessions; it does not launch them.
 
 ## Fast loop
 
@@ -28,6 +24,8 @@ GitHub holds Work Orders, draft PRs, and lightweight hosted checks. [GitHub oper
 
 ## Checks and references
 
-With Python 3.10 or later, run `python3 tools/check_docs.py` and `python3 -m unittest discover -s tests`. These existing standard-library checks cover documentation structure and their own fixtures, not agent behavior. The builder adds short prototype tests and a real walkthrough.
+With Python 3.10 or later, run `python3 tools/check_docs.py` and `python3 -m unittest discover -s tests`. The structural checker covers documentation; test discovery also runs six workboard smoke tests through real local CLI processes with simulated identities. These are local self-tests, not independent agent acceptance.
 
 Useful on demand: [architecture](docs/architecture.md), [transport research](docs/research/coordination-options.md), [research report](docs/templates/research-report.md), [assessment template](docs/templates/assessment.md), and [historical self-check evidence](docs/reviews/foundation-self-check.md). No project license has been selected; third-party code reuse needs a provenance/license decision.
+
+For the no-render text inspection slice, see the [source inspector](docs/source-inspector.md). It emits scoped Evidence receipts from fixed local text exports.
