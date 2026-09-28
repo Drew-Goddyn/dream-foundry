@@ -1,0 +1,87 @@
+#!/usr/bin/env node
+// INKBORN's scene-specific entry. External Motor does validation, evaluation and drawing.
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import {fileURLToPath,pathToFileURL} from 'node:url';
+import {spawnSync} from 'node:child_process';
+import {createHash} from 'node:crypto';
+import {createServer} from 'node:http';
+import {buildArt} from './art.mjs';
+import {replay,POSES} from './gesture.mjs';
+const here=path.dirname(fileURLToPath(import.meta.url)), repo=path.resolve(here,'../..');
+const argv=process.argv.slice(2), option=k=>argv[argv.indexOf(k)+1];
+if(argv.includes('--help')||!argv.includes('--config')||!argv.includes('--out')) {
+  console.log('node experiments/inkborn/run.mjs --config /private/local-tools.json --out /private/new-inkborn [--variant initial|candidate] [--capture] [--verify] [--compare /private/initial-output] [--serve]');
+  console.log('Config: {"motorRoot":"/existing/authorized/installation","chrome":"/installed/chrome"}. No installs. Output must be new and outside any Git worktree.');
+  process.exit(argv.includes('--help')?0:2);
+}
+const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
+const json=async(p,v)=>fs.writeFile(p,JSON.stringify(v,null,2)+'\n');
+try {
+  const config=JSON.parse(await fs.readFile(path.resolve(option('--config')),'utf8'));
+  if(!path.isAbsolute(config.motorRoot)||!path.isAbsolute(config.chrome))throw Error('Configure absolute motorRoot and chrome paths to existing authorized tools.');
+  const motor=await fs.realpath(config.motorRoot),out=path.resolve(option('--out'));
+  for(const p of ['motor','dist/motor.js','dist/player.js','dist/renderer-selection.js','bundle.json','renderer/manifest.json'])await fs.access(path.join(motor,p));
+  await fs.access(config.chrome);
+  let parent=path.dirname(out);await fs.mkdir(parent,{recursive:true});parent=await fs.realpath(parent);
+  const destination=path.join(parent,path.basename(out));
+  if(spawnSync('git',['-C',parent,'rev-parse','--show-toplevel'],{encoding:'utf8'}).status===0)throw Error('Private output must be outside every Git worktree.');
+  const {resolveRenderer}=await import(pathToFileURL(path.join(motor,'dist/renderer-selection.js')));
+  const selection=await resolveRenderer({backend:'rive',directory:path.join(motor,'renderer'),pixelRatio:1});
+  const Motor=await import(pathToFileURL(path.join(motor,'dist/motor.js')));
+  const tuning=JSON.parse(await fs.readFile(path.join(here,'tuning.json'))),variant=argv.includes('--variant')?option('--variant'):'candidate';
+  if(!['initial','candidate'].includes(variant))throw Error('variant must be initial or candidate');
+  const doc=Motor.parseDocument(buildArt(tuning[variant]));
+  await fs.mkdir(destination); // Refuse overwrites; failed evidence is retained.
+  const cli=(args)=>{
+    const r=spawnSync(path.join(motor,'motor'),args,{cwd:repo,encoding:'utf8',env:{...process.env,MOTOR_CHROME:config.chrome,MOTOR_RENDERER_DIR:path.join(motor,'renderer')},maxBuffer:20*1024*1024});
+    if(r.status!==0)throw Error(`Motor ${args[0]} failed: ${r.stderr||r.stdout||r.error}`);return r.stdout;
+  };
+  await json(path.join(destination,'inkborn.motor.json'),doc);await json(path.join(destination,'replay.json'),replay());
+  const scene=path.join(destination,'inkborn.motor.json');
+  await fs.writeFile(path.join(destination,'validation.json'),cli(['validate',scene]));
+  await fs.writeFile(path.join(destination,'inspection.json'),cli(['inspect',scene]));
+  cli(['embed',scene,path.join(destination,'play'),'--no-animation','--renderer','rive','--dpr','1']);
+  // A tailored host around Motor's public browser API. The host never paints scene geometry.
+  await fs.copyFile(path.join(motor,'dist/motor.js'),path.join(destination,'play','motor-api.js'));
+  await fs.copyFile(path.join(here,'player.html'),path.join(destination,'play','index.html'));
+  await fs.copyFile(path.join(here,'gesture.mjs'),path.join(destination,'play','gesture.mjs'));
+  await fs.copyFile(scene,path.join(destination,'play','scene.json'));
+  await fs.copyFile(path.join(repo,'third_party/anidoodle/LICENSE'),path.join(destination,'play','anidoodle-LICENSE.txt'));
+  await fs.copyFile(path.join(repo,'third_party/anidoodle/NOTICE'),path.join(destination,'play','anidoodle-NOTICE.txt'));
+  const sourceFiles=['art.mjs','marks.mjs','gesture.mjs','player.html','run.mjs','tuning.json','verify.mjs','comparison.html','ATTRIBUTION.md','README.md','REVIEW.md'];
+  const sourceHashes={};for(const f of sourceFiles)sourceHashes[f]=hash(await fs.readFile(path.join(here,f)));
+  const bundle=JSON.parse(await fs.readFile(path.join(motor,'bundle.json')));
+  const identity={format:1,foundryBase:'d3d358d4b44400cf24d72df8e243f0240221665c',foundryHead:spawnSync('git',['rev-parse','HEAD'],{cwd:repo,encoding:'utf8'}).stdout.trim(),sourceHashes,variant,tuning:tuning[variant],motorSource:bundle.source,motorRuntimeSHA256:hash(await fs.readFile(path.join(motor,'dist/motor.js'))),renderer:selection.selection,anidoodle:'03ddf534328962f8a91eb115e3ae67e03da4de5a',sceneSHA256:hash(await fs.readFile(scene)),replaySHA256:hash(await fs.readFile(path.join(destination,'replay.json'))),independentReview:'pending human-launched non-author'};
+  await json(path.join(destination,'identity.json'),identity);
+  if(argv.includes('--capture'))for(const pose of POSES)cli(['snapshot',scene,path.join(destination,pose.name),'--time',String(pose.time),'--no-animation','--replay',path.join(destination,'replay.json'),'--renderer','rive','--dpr','1']);
+  if(argv.includes('--compare')){
+    if(!argv.includes('--capture'))throw Error('--compare requires --capture');
+    const before=path.resolve(option('--compare')),prior=JSON.parse(await fs.readFile(path.join(before,'identity.json')));
+    if(prior.replaySHA256!==identity.replaySHA256)throw Error('Comparison rejected: replay bytes differ.');
+    const comparison=path.join(destination,'play/comparison');await fs.mkdir(comparison);
+    await fs.copyFile(path.join(here,'comparison.html'),path.join(comparison,'index.html'));
+    for(const pose of POSES){
+      await fs.copyFile(path.join(before,pose.name,'frame.png'),path.join(comparison,'before-'+pose.name+'.png'));
+      await fs.copyFile(path.join(destination,pose.name,'frame.png'),path.join(comparison,'after-'+pose.name+'.png'));
+    }
+    await json(path.join(comparison,'identities.json'),{before:prior,after:identity});
+  }
+  if(argv.includes('--verify')){
+    const {verify}=await import('./verify.mjs');await verify({Motor,doc,out:destination,motor,chrome:config.chrome,serve});
+  }
+  console.log(JSON.stringify({output:destination,play:path.join(destination,'play/index.html'),scene,sceneSHA256:identity.sceneSHA256,checks:argv.includes('--verify')?'passed':'not requested'},null,2));
+  if(argv.includes('--serve')) {
+    const server=serve(path.join(destination,'play'));await new Promise(r=>server.listen(0,'127.0.0.1',r));
+    console.log(`INKBORN http://127.0.0.1:${server.address().port}/`);
+    for(const signal of ['SIGTERM','SIGINT'])process.on(signal,()=>server.close(()=>process.exit(0)));
+  }
+} catch(e) {console.error('INKBORN: '+e.message);process.exitCode=1;}
+export function serve(root) {
+  const types={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.json':'application/json','.wasm':'application/wasm','.png':'image/png'};
+  return createServer(async(req,res)=>{try{
+    const pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname),file=path.resolve(root,'.'+(pathname.endsWith('/')?pathname+'index.html':pathname));
+    if(!file.startsWith(root+path.sep))throw Error('outside output');
+    const data=await fs.readFile(file);res.writeHead(200,{'Content-Type':types[path.extname(file)]||'application/octet-stream','Cache-Control':'no-store'});res.end(data);
+  }catch{res.writeHead(404);res.end('Not found');}});
+}
