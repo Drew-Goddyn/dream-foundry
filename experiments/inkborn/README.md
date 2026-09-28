@@ -77,8 +77,11 @@ vanishing band of ink through the sampled replay.
 The candidate opens the engraved plates from the lower pivots upward and holds
 the crown until the final part of the pull. Shape, rotation, pigment and engraving
 follow each plate’s interval. Release traverses those same partial assemblies in
-reverse; the closed and fully opened drawings are preserved. The two extra
+reverse; the press’s closed and fully opened forms are preserved. The two extra
 transition samples compare this staging without changing the recorded gesture.
+At the developed bloom, the creature glances toward the flower while its hand
+keeps reaching for the drop. Its focus returns as the pull softens; the glance
+follows the current pose without adding an autonomous sequence.
 
 Add `--film` to encode Motor's full 7.5-second replay sequence as a local MP4.
 Set `ffmpeg` in the private configuration to an absolute path to an existing

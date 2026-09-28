@@ -10,7 +10,8 @@
     "pigment": 0.84,
     "connected": true,
     "expressive": true,
-    "stagedBloom": true
+    "stagedBloom": true,
+    "noticeBloom": true
   },
   "bookplate": {
     "spread": 1.05,

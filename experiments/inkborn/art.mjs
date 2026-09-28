@@ -176,15 +176,21 @@ export function buildArt(tune) {
   if(tune.expressive){group('near-ocular',0,0,'face');group('far-ocular',0,0,'face');held('near-ocular','scaleY',[[0,1],[.4,.48],[.62,.65],[1,1.13]]);held('far-ocular','scaleY',[[0,.85],[.4,.62],[1,1.08]]);}
   path('far-eye',[['M',11,-16],['C',15,-29,28,-31,32,-20],['C',33,-8,20,-4,11,-16],['Z']],C.paper,C.ink,1.2,tune.expressive?'far-ocular':'face');
   path('near-eye',[['M',-20,-10],['C',-18,-32,4,-40,15,-21],['C',21,-1,-5,10,-20,-10],['Z']],C.paper,C.ink,1.8,tune.expressive?'near-ocular':'face');
-  ellipse('pupil-near',3,-16,5.2,9,C.ink,null,tune.expressive?'near-ocular':'face');ellipse('pupil-far',26,-19,3.2,6,C.ink,null,tune.expressive?'far-ocular':'face');
+  // The hand keeps reaching; at full pull the eyes notice what the press became.
+  const nearGaze=tune.noticeBloom?group('near-gaze',0,0,'near-ocular'):(tune.expressive?'near-ocular':'face');
+  const farGaze=tune.noticeBloom?group('far-gaze',0,0,'far-ocular'):(tune.expressive?'far-ocular':'face');
+  if(tune.noticeBloom){held(nearGaze,'x',[[0,0],[.72,0],[1,-17]]);held(farGaze,'x',[[0,0],[.72,0],[1,-10]]);}
+  ellipse('pupil-near',3,-16,5.2,9,C.ink,null,nearGaze);ellipse('pupil-far',26,-19,3.2,6,C.ink,null,farGaze);
   bind('reachX','pupil-near','x',.014);bind('reachY','pupil-near','y',.014);bind('reachX','pupil-far','x',.007);
-  ellipse('glint',1,-20,1.5,2,C.paper,null,tune.expressive?'near-ocular':'face');
+  ellipse('glint',1,-20,1.5,2,C.paper,null,nearGaze);
   if(tune.connected){
     path('focused-lid',[['M',-23,-18],['C',-14,-38,9,-41,18,-18],['C',6,-21,-5,-24,-23,-18],['Z']],C.ink,null,1,'face',{opacity:0});
     held('focused-lid','opacity',tune.expressive?[[0,0],[1,0]]:[[0,0],[.33,.75],[.65,.5],[1,.06]]);
     path('lower-eye-pressure',[['M',-20,-2],['Q',-3,7,12,-5]],null,C.ink,2,'face');
   }
-  const brow=line([[-23,-34],[-8,-41],[5,-37]],3,C.ink,'face');if(tune.expressive){held(brow,'y',[[0,0],[.42,15],[1,-4]]);held(brow,'rotation',[[0,-4],[.42,18],[1,-8]]);}
+  const browParent=tune.noticeBloom?group('brow-notice',0,0,'face'):'face';
+  if(tune.noticeBloom){held(browParent,'y',[[0,0],[.72,0],[1,-4]]);held(browParent,'rotation',[[0,0],[.72,0],[1,-8]]);}
+  const brow=line([[-23,-34],[-8,-41],[5,-37]],3,C.ink,browParent);if(tune.expressive){held(brow,'y',[[0,0],[.42,15],[1,-4]]);held(brow,'rotation',[[0,-4],[.42,18],[1,-8]]);}
   line([[15,-36],[25,-37],[31,-33]],2,C.ink,'face');
   const mouth=line([[35,9],[48,12],[60,7]],1.7,C.paper,'face',.9);
   if(tune.expressive){held(mouth,'opacity',[[0,.9],[.25,0],[1,0]]);
