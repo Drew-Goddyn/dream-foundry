@@ -1,50 +1,60 @@
 # Current status
 
-Snapshot: 2026-09-27, America/Vancouver. This is the authoritative current handoff, not a live scheduler. Earlier launch briefs describe historical assignments unless linked as current here.
+Current handoff after DF-RUN-01, not a live scheduler. Earlier launch briefs are historical unless this file explicitly identifies them as current.
 
-## Decision and next action
+## Next action: transfer the existing source ZIP
 
-The human relayed the original **DF-VERIFY-03 PASS** on all six frozen source-inspector and workboard-UX requirements. No repair is required. [Review #11](https://github.com/Drew-Goddyn/dream-foundry/issues/11) is complete. [Delivery #10](https://github.com/Drew-Goddyn/dream-foundry/issues/10) remains open for publication and human acceptance. Do not relaunch this implementation review.
+The human relayed DF-RUN-01's consolidated report: both assigned Work Orders are sealed, and the session stopped. [Run #12](https://github.com/Drew-Goddyn/dream-foundry/issues/12) records the two Submissions and their pending Assessments. No code change, repeat execution, additional packaging assignment, or duplicate implementation review is needed.
 
-Next: one human-launched **DF-RUN-01** uses the unchanged reviewed code for [two explicit Work Orders in one session, #12](https://github.com/Drew-Goddyn/dream-foundry/issues/12). First deliver the exact source through available approved Git access or prepare a source-only upload ZIP; then inspect actual anidoodle drawing source with the existing inspector. Claim, perform and seal each through the workboard without an intermediate human prompt. A blocked independent task does not prevent attempting the other. Return one consolidated handoff and stop after those two tasks.
+Attach the existing `source-inspector-b23a5b5.zip` from the local wave's `exports` directory to the planning conversation. It reportedly contains only the unchanged `source-inspector.bundle`. The private handoff has the exact path. A local path or hash does not transfer the file. Keep boards, raw logs, private manifests, credentials and machine settings local.
 
-This is bounded supervised use, not a persistent orchestrator, automatic launch mechanism or permission for recursive workers. The source file remains absent from the planning conversation, but that does not prevent local use of the reviewed implementation.
+The planning conversation still has no implementation bytes. Source transfer is the immediate dependency for direct inspection and publication work here. The two new report Assessments remain pending; this does not invalidate the completed implementation review or prevent transferring that existing source. No report review is being silently counted as passed or waived.
 
-## Reviewed implementation
+## Two-task run, received by attribution
+
+| Task | Work Order | Trial | Submission |
+| --- | --- | --- | --- |
+| Source delivery | W3-RUN-01-01a0e587-A | W3-RUN-01-01a0e587-A-T1 | W3-RUN-01-01a0e587-A-S1 |
+| Drawing inspection | W3-RUN-01-01a0e587-B | W3-RUN-01-01a0e587-B-T1 | W3-RUN-01-01a0e587-B-S1 |
+
+A package digest: `06fd6748c476951e9abe55f239d7b103bd9284dee6427aa21f4d1447246099ab`.
+
+B package digest: `16358b990eb201b0dd5c398b4bf60200bb97f681f49dbf9d849b028d7676302e`.
+
+Both reportedly have status `submitted-awaiting-real-review`; human acceptance is unrecorded. The runner reports verifying 47 sealed files and 101 protected historical files, with original source and prior records preserved. Its full session identifier was not included in the relayed summary; a directory prefix is not a substitute. Original evidence remains local and has not been inspected from this conversation.
+
+### Delivery outcome
+
+The local ZIP fallback was produced and checked. Extraction reportedly reproduced bundle SHA-256 `183006d3ab147541008aa7919d641810434ee783d95748660d43a5cf1d4139d3`. This is the hash of the enclosed bundle, not a supplied ZIP checksum. History, author identities and license notices were preserved.
+
+The runner reports invalid existing GitHub CLI authentication, zero publication attempts, and no PR. Local ZIP creation is not uploading or publishing source. No further authentication retry or permission change is assigned. On receipt of actual bytes, inspect archive contents, verify the enclosed bundle and Git identities, and preserve the reviewed source during delivery.
+
+### Actual drawing-source use
+
+The runner inspected `film.ts`, `balloonDraw.ts` and `balloon.ts` under anidoodle's `skills/anidoodle/engine/src/canvas-core/` at revision `03ddf534328962f8a91eb115e3ae67e03da4de5a`. It reports agreement with pinned listing sizes and Git blob hashes. Examined source: 29,079 bytes. Total reported text acquisition: eight files and 282,233 bytes, within the assigned limit.
+
+Two runs reportedly exited 0 with `no_findings_in_scope` and identical 3,742-byte receipts. Receipt SHA-256: `b4e90145f0d8d29743cb897b8195f6e215bbaab8a518f54ab9115a3b361fc12f`. A separate modified synthetic fixture exited 1 with the inserted `Math.random` finding; original source was preserved.
+
+This is real drawing-text use of an already-reviewed inspector, reported by its operator. It is not an independent Assessment of the new report. Helpers, compilation, rendering, determinism, security and visual quality remain untested. No matches in this selected scope do not certify the repository. A manifest alone does not authenticate upstream origin.
+
+## Reviewed implementation, unchanged
 
 | Record | Identity |
 | --- | --- |
 | Commit | `b23a5b5c523a42fe47c1f0c11761ef2b80cb8796` |
 | Tree | `89ed649a0c4b4e44214782729bf465e3cb8c51a6` |
-| Direct parent / baseline input | `02675002f640dc484ec6f37a251aff2a5c21cc10` |
-| Submission | `W2-B-47c1-S1` |
-| Submission digest | `5e616f0adcaeae5535208aa1457e945f7ef5192c8a8ea9cc25ab95093feaa137` |
-| Bundle SHA-256 | `183006d3ab147541008aa7919d641810434ee783d95748660d43a5cf1d4139d3` |
-| Real Assessment | `W2-B-47c1-ASSESS-DF-VERIFY-03-01` |
+| Direct parent / bookkeeping baseline | `02675002f640dc484ec6f37a251aff2a5c21cc10` |
+| Implementation Submission | W2-B-47c1-S1 |
+| Real Assessment | W2-B-47c1-ASSESS-DF-VERIFY-03-01 |
 | Reviewer session | `01a0e56e-4c21-7052-929c-9c905f4f6c30` |
-| Trial status | `review-pass-awaiting-human-acceptance` |
-| Human acceptance | `not-recorded` |
+| Disposition | PASS on scoped implementation; acceptance unrecorded |
 
-The reviewer reports checking the bundle/parent/tree, all 23 sealed files and 41 archived source files, reproducing receipt digest `4be2fa2354c18f665da3f027d6e19ef0bdb3e417d2699e8ba34afa773c259e12`, exercising 29 direct input controls and 11 status scenarios, and passing documentation checks plus all 27 tests. The example command opened no board; compact status retained important state; default output matched the baseline. The shared ledger gained one real Assessment/event only.
+[Review #11](https://github.com/Drew-Goddyn/dream-foundry/issues/11) is complete with no repair requested. The original reviewer reports direct input/status controls, all 27 tests passing, receipt reproduction, and preservation checks. These are original observations received by human relay, not a rerun by ChatGPT. [Delivery #10](https://github.com/Drew-Goddyn/dream-foundry/issues/10) remains open for publication and human acceptance.
 
-The reviewer reports that all 364 pre-existing protected files remained byte-identical. An unrelated `.DS_Store` appeared beside builder output; its creator is unknown and it was left untouched. Original commands and the preservation exception remain in the local review report. These are attributed independent observations received by human relay, not a rerun by the planning conversation.
+The earlier workboard review [#5](https://github.com/Drew-Goddyn/dream-foundry/issues/5) and W1 report review [#9](https://github.com/Drew-Goddyn/dream-foundry/issues/9) remain complete. None requires another unchanged review. The shared wave keeps its original bookkeeping baseline; inspection uses a separate unchanged checkout of b23a5b5. Preserve historical source and criteria bindings.
 
-## What the result means
+## Remote state and authority
 
-The checked implementation supplies a text-export inspector, a discoverable minimal Work Order example, and opt-in compact status. The actual scan covered three tooling files and produced 18 textual findings in definitions/messages. Those are not film defects. Local text exports have unauthenticated origin declarations and partial repository coverage; heuristic checks cannot prove compilation, rendering determinism, security, dependency compliance or visual quality.
+The last inspected remote showed main at `62261db81ae9c02ee2d047a607ddbac41a11cc6f` and documentation at `aa64a320de3399cbb3fa2f5989fb27524752e771` before this update. No implementation branch was visible. [Draft PR #2](https://github.com/Drew-Goddyn/dream-foundry/pull/2) is still documentation, not the local implementation. Consult the checks attached to the exact documentation head; their success does not establish implementation CI.
 
-The next actual-source scan must acquire drawing source, preserve pinned-source provenance, report its explicit scope, and distinguish a modified negative fixture from pristine upstream bytes. It does not require another code change or a full renderer setup.
-
-## Preserve the working baseline
-
-The shared wave still uses `02675002`, tree `176e34317128c05c87e119c4447205adb0432a94`, for bookkeeping. New inspection runs use a separate checkout of reviewed `b23a5b5`. Keep the existing manifest, source, criteria and sealed reports unchanged. A later coordinated baseline upgrade is a separate operation, not something a source-inspection task silently performs.
-
-Review [#5](https://github.com/Drew-Goddyn/dream-foundry/issues/5) passed the original workboard. Review [#9](https://github.com/Drew-Goddyn/dream-foundry/issues/9) passed both W1 reports: `W1-A-ASSESS-DF-VERIFY-02-01` and `W1-B-ASSESS-DF-VERIFY-02-01`. Those completed reviews need no duplicate runs. Reports [#7](https://github.com/Drew-Goddyn/dream-foundry/issues/7)/[#8](https://github.com/Drew-Goddyn/dream-foundry/issues/8) and implementation deliveries [#6](https://github.com/Drew-Goddyn/dream-foundry/issues/6)/[#10](https://github.com/Drew-Goddyn/dream-foundry/issues/10) retain their distinct acceptance/publication states.
-
-## Delivery and authority
-
-The latest remote inspection showed only main's landing commit `62261db81ae9c02ee2d047a607ddbac41a11cc6f` and documentation head `c8f6237fb718d56fedf7de01fa438ac6b5dc0219` before this status update. [Draft PR #2](https://github.com/Drew-Goddyn/dream-foundry/pull/2) is documentation, not the local implementation. Its historical [run 36344300640](https://github.com/Drew-Goddyn/dream-foundry/actions/runs/36344300640) had a successful docs-check job; later heads require their own check. No CI for the local inspector is claimed.
-
-The source-only bundle remains local. Task #12 may publish the exact reviewed commit through already authorized access, without merge, or prepare an upload-ready ZIP containing only that bundle. A local filename, hash or successful local copy is not a transfer to the planning conversation. Keep boards, private manifests, transcripts, credentials and machine settings local. Preserve Git identities and license notices; report any privacy concern rather than silently rewriting reviewed history.
-
-No new session has been dispatched by this update. Human acceptance, merging, account/permission changes, paid provisioning, shared-source upgrades and unattended provider execution remain separate. This next assignment performs at most two tasks with installed tools and small CPU/text reads; it creates no agents, services, GPU/media/model workloads or new implementation.
+Leave the completed runner idle. No new agent, unattended workload, baseline upgrade, code change, merge, deployment, paid provisioning or credential/permission/billing change is assigned. Source transfer does not itself record human acceptance or authorize merging. Preserve the distinction between submitted, reviewed, accepted and published work.
