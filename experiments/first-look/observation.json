@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "maker": "DF-MAKE-01",
+  "work_order": "https://github.com/Drew-Goddyn/dream-foundry/issues/14",
+  "starting_branch": "docs/phase-0-foundation",
+  "starting_revision": "ca2f33c40cb5b8688feca8926ba2d3842f8c9014",
+  "starting_tree": "7f423859b9cb929dd7396601741b661b9e66416b",
+  "starting_revision_verification": "Matched git ls-remote before creating the separate worktree.",
+  "branch": "make/first-look",
+  "artifact": {
+    "path": "experiments/first-look/index.html",
+    "bytes": 19957,
+    "sha256": "a217a1bb5a0811f185bb935a921de1772533f48fe72ae5ba1f7e86d200263842",
+    "canvas_pixels": [
+      960,
+      560
+    ],
+    "loop_seconds": 9,
+    "draw_rate_target_hz": 30
+  },
+  "process": {
+    "moving_rough_before_shared_controls": true,
+    "rough_observation": "Opened the actual file in installed Chrome; canvas pixels changed over 1.2 seconds before assembling shared controls.",
+    "new_agents": 0,
+    "installed_dependencies": 0,
+    "model_generation_calls": 0,
+    "effective_model_identifier": "not exposed",
+    "effective_reasoning_setting": "not exposed"
+  },
+  "local_checks": {
+    "browser": "Installed Chrome 153; visible page and separate headless measurement session.",
+    "live_loop_measurements": [
+      {
+        "sketch": "A",
+        "elapsed_ms": 18782.6,
+        "draw_counts_ABC": [
+          565,
+          0,
+          0
+        ],
+        "selected_only": true,
+        "pause_frozen": true,
+        "restart_while_paused": true
+      },
+      {
+        "sketch": "B",
+        "elapsed_ms": 18799.3,
+        "draw_counts_ABC": [
+          0,
+          565,
+          0
+        ],
+        "selected_only": true,
+        "pause_frozen": true,
+        "restart_while_paused": true
+      },
+      {
+        "sketch": "C",
+        "elapsed_ms": 18915.9,
+        "draw_counts_ABC": [
+          0,
+          0,
+          569
+        ],
+        "selected_only": true,
+        "pause_frozen": true,
+        "restart_while_paused": true
+      }
+    ],
+    "controls": {
+      "hiddenTab": {
+        "pausedClock": true,
+        "zeroDraws": true,
+        "resumesWithoutCatchup": true
+      },
+      "keyboard": true,
+      "reducedMotion": {
+        "startsPaused": true,
+        "explicitPlayWorks": true
+      },
+      "offlineReload": true
+    },
+    "resize": [
+      {
+        "width": 320,
+        "noHorizontalOverflow": true,
+        "canvasWidth": 290
+      },
+      {
+        "width": 390,
+        "noHorizontalOverflow": true,
+        "canvasWidth": 360
+      },
+      {
+        "width": 768,
+        "noHorizontalOverflow": true,
+        "canvasWidth": 702
+      },
+      {
+        "width": 1280,
+        "noHorizontalOverflow": true,
+        "canvasWidth": 1118
+      }
+    ],
+    "page_errors": 0,
+    "external_requests": 0,
+    "network_observation": "Three file document loads; no external page requests. Offline reload played successfully.",
+    "syntax": "Inline JavaScript passed node --check.",
+    "repository_checks": {
+      "documentation": "PASS: python3 tools/check_docs.py",
+      "tests": "PASS: python3 -m unittest discover -s tests; 27 tests in 8.257 seconds. Both repository checks ran once; subsequent changes were confined to the new HTML and this record."
+    },
+    "sampled_visual_observation": [
+      "A: linked arm and traced five-lobed flower visible at intermediate and completed states.",
+      "B: branching ink and a rust-colored flower grow above and across the press.",
+      "C: angular hatched panels bend into petals around the same central gear.",
+      "390px layout inspected; controls and drawing remain inside the viewport."
+    ],
+    "continuous_visual_observation": {
+      "status": "BLOCKED",
+      "reason": "The session exposes still-image observations, not continuous video input. Two live periods were measured for each sketch; screenshots supplement these measurements and are not claimed as watching two complete cycles."
+    },
+    "exact_pixel_boundary_probe": {
+      "status": "INCONCLUSIVE",
+      "reason": "First PNG captures differed even for repeated rendering at the identical timestamp. The probe does not establish an animation discontinuity or prove a smooth reset. No pixel-perfect or continuous-motion claim is made."
+    }
+  },
+  "workboard": {
+    "status": "NOT_RECORDED",
+    "reason": "The existing shared state root was not readily available in the supplied context or obvious local locations. No board was created, migrated or changed."
+  },
+  "independent_review": "PENDING: separately human-launched reviewer; none launched by the maker.",
+  "human_acceptance": "not recorded"
+}
